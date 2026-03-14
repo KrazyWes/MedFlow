@@ -9,5 +9,8 @@ venv/
 .coverage
 htmlcov/
 
-# Large raw datasets (excluded from repo due to size)
+# Data files - never commit to repo
 raw_datasets/
+this_datasets/
+*.csv
+*.xlsx
