@@ -9,8 +9,10 @@ venv/
 .coverage
 htmlcov/
 
-# Data files - never commit to repo
+# Data and generated outputs - regenerable from pipeline
 raw_datasets/
 this_datasets/
+model_prep_outputs/
+model_outputs/
 *.csv
 *.xlsx
