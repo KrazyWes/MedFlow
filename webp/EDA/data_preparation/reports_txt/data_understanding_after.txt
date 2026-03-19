@@ -1,0 +1,138 @@
+
+====================================================================================================
+DOH - AFTER BASIC CLEANING (headers/currency) - BEFORE IMPUTATION - Data Understanding Snapshots (consolidated)
+====================================================================================================
+- Objective: Prepare numeric amounts/costs and a time indicator for later feature engineering (frequency, totals) and clustering.
+- Expected key columns: ['RECIPIENT', 'ITEM DESCRIPTION', 'QUANTITY', 'UNIT COST', 'TOTAL AMOUNT', 'DATE DELIVERED', 'Year']
+- Snapshots included: 4
+
+----------------------------------------------------------------------------------------------------
+Snapshot: DOH after header/currency cleaning - DOH raw (Excel) - DISTRIBUTION REPORT 2022-205 (FOI REQUEST).xlsx / sheet '2022'
+Rows, Cols: 82, 11
+Missing key columns: ['DATE DELIVERED']
+Duplicate rows: 0
+Missing values (top):
+  - UNIT COST: 47
+  - DATE DELIVERED or PICKED-UP BY OR TO RECIPIENTS: 20
+
+----------------------------------------------------------------------------------------------------
+Snapshot: DOH after header/currency cleaning - DOH raw (Excel) - DISTRIBUTION REPORT 2022-205 (FOI REQUEST).xlsx / sheet '2023'
+Rows, Cols: 1850, 11
+Missing key columns: ['DATE DELIVERED']
+Duplicate rows: 71
+Missing values (top):
+  - UNIT COST: 340
+  - DATE DELIVERED or PICKED-UP BY OR TO RECIPIENTS: 67
+  - PURCHASE ORDER /CONTRACT NO./SOURCE: 39
+  - QUANTITY: 1
+  - UNIT OF MEASUREMENT: 1
+
+----------------------------------------------------------------------------------------------------
+Snapshot: DOH after header/currency cleaning - DOH raw (Excel) - DISTRIBUTION REPORT 2022-205 (FOI REQUEST).xlsx / sheet '2024'
+Rows, Cols: 2582, 11
+Missing key columns: ['DATE DELIVERED']
+Duplicate rows: 42
+Missing values (top):
+  - DATE DELIVERED or PICKED-UP BY OR TO RECIPIENTS: 15
+  - QUANTITY: 11
+  - UNIT OF MEASUREMENT: 8
+
+----------------------------------------------------------------------------------------------------
+Snapshot: DOH after header/currency cleaning - DOH raw (Excel) - DISTRIBUTION REPORT 2022-205 (FOI REQUEST).xlsx / sheet '2025'
+Rows, Cols: 3705, 11
+Missing key columns: ['DATE DELIVERED']
+Duplicate rows: 39
+Missing values (top):
+  - QUANTITY: 21
+  - PURCHASE ORDER /CONTRACT NO./SOURCE: 1
+  - UNIT OF MEASUREMENT: 1
+  - DATE DELIVERED or PICKED-UP BY OR TO RECIPIENTS: 1
+
+====================================================================================================
+DOH - AFTER BASIC CLEANING (headers/currency) - BEFORE IMPUTATION - Attribute selection notes (K-Means + DBSCAN)
+====================================================================================================
+Goal: identify meaningful attributes for similarity patterns and anomaly detection.
+Reminder: K-Means/DBSCAN need numeric feature vectors; categoricals require encoding.
+
+Recommended attribute triage (based on merged view of this stage):
+- Objective: C. Distribution Pattern Clustering (DOH)
+- Usable numeric (candidate features):
+  - UNIT COST: numeric, missing=4.7%
+  - TOTAL AMOUNT: numeric, missing=0.0%
+  - Year: numeric, missing=0.0%
+- Categorical/mixed (use after encoding/aggregation):
+  - PROGRAM/ END-USER: categorical/mixed, nunique=8, missing=0.0%
+  - UNIT OF MEASUREMENT: categorical/mixed, nunique=41, missing=0.1%
+  - RECIPIENT: must-have; dtype=object, nunique=464, missing=0.0%
+  - ITEM DESCRIPTION: must-have; dtype=object, nunique=605, missing=0.0%
+- Drop or review (too missing / too high-cardinality / noisy):
+  - PTR NUMBER: excluded_by_name_rule
+  - RECIPIENT: categorical/mixed needs review (nunique=464, missing=0.0%)
+  - ITEM DESCRIPTION: categorical/mixed needs review (nunique=605, missing=0.0%)
+  - PURCHASE ORDER /CONTRACT NO./SOURCE: excluded_by_name_rule
+  - QUANTITY: categorical/mixed needs review (nunique=3234, missing=0.4%)
+  - DATE DELIVERED or PICKED-UP BY OR TO RECIPIENTS: categorical/mixed needs review (nunique=612, missing=1.3%)
+
+====================================================================================================
+DATA UNDERSTANDING SNAPSHOT: DOH merged (after missing-value handling)
+====================================================================================================
+Rows, Cols: 8219, 11
+Dtypes: {'PROGRAM/ END-USER': 'object', 'PTR NUMBER': 'object', 'RECIPIENT': 'object', 'ITEM DESCRIPTION': 'object', 'PURCHASE ORDER /CONTRACT NO./SOURCE': 'object', 'QUANTITY': 'float64', 'UNIT OF MEASUREMENT': 'object', 'UNIT COST': 'float64', 'TOTAL AMOUNT': 'float64', 'DATE DELIVERED or PICKED-UP BY OR TO RECIPIENTS': 'object', 'Year': 'int64'}
+Missing key columns: ['DATE DELIVERED']
+Duplicate rows: 152
+Missing values: none
+Numeric summary (first columns):
+               count          mean           std     min       25%       50%        75%          max
+QUANTITY      8219.0  9.595631e+04  2.613768e+05     0.0   1512.50   11520.0    72732.0    8328960.0
+UNIT COST     8219.0  5.877238e+03  1.723195e+05     0.0      2.75       8.0      100.0   12311325.0
+TOTAL AMOUNT  8219.0  1.809186e+06  8.343654e+06     0.0  40016.90  251853.0  1022565.0  367294400.0
+Year          8219.0  2.024206e+03  8.206902e-01  2022.0   2024.00    2024.0     2025.0       2025.0
+
+====================================================================================================
+DATA UNDERSTANDING SNAPSHOT: PhilGEPS filtered to medical records (before missing-value handling)
+====================================================================================================
+Rows, Cols: 53312, 46
+Dtypes: {'Procuring Entity (PE)': 'object', 'Region': 'object', 'Province': 'object', 'City/Municipality': 'object', 'Government Branch': 'object', 'PE Organization Type': 'object', 'PE Organization Type (Grouped)': 'object', 'Bid Reference No.': 'int64', 'Notice Title': 'object', 'Classification': 'object', 'Procurement Mode': 'object', 'Business Category': 'object', 'Funding Source': 'object', 'Funding Instrument': 'object', 'Trade Agreement': 'object', 'Approved Budget of the Contract': 'float64', 'Published Date': 'object', 'Closing Date': 'object', 'Area of Delivery': 'object', 'Contract Duration': 'float64', 'Calendar Type': 'object', 'Line Item No': 'float64', 'Item Name': 'object', 'Item Description': 'object', 'Quantity': 'float64', 'UOM': 'object', 'Item Budget': 'float64', 'Bid Notice Status': 'object', 'Award Reference No.': 'float64', 'Award Title': 'object', 'UNSPSC Code': 'float64', 'UNSPSC Description': 'object', 'Published Date(Award)': 'object', 'Award Date': 'object', 'Contract Amount': 'float64', 'Award Notice Status': 'object', 'Notice to Proceed Date': 'object', 'Contract Effectivity Date': 'object', 'Contract End Date': 'object', 'Awardee Organization Name': 'object', 'Country of Awardee': 'object', 'Region of Awardee': 'object', 'Province of Awardee': 'object', 'City/Municipality of Awardee': 'object', 'Awardee Size': 'object', 'Awardee Joint Venture': 'object'}
+Duplicate rows: 17434
+Missing values (top 10):
+  - Awardee Joint Venture: 52728
+  - Notice to Proceed Date: 16567
+  - Contract Effectivity Date: 16567
+  - Contract End Date: 16567
+  - Awardee Size: 4953
+  - Area of Delivery: 4418
+  - Closing Date: 3626
+  - Calendar Type: 3626
+  - Published Date: 2177
+  - Contract Duration: 778
+Numeric summary (first columns):
+                                   count          mean           std          min          25%          50%         75%           max
+Bid Reference No.                53312.0  1.111580e+07  3.008348e+06         0.00  11734455.00  11888221.00  12052585.0  1.241981e+07
+Approved Budget of the Contract  53312.0  1.482683e+07  5.129414e+07        20.00    236500.00    932606.20   6748129.0  4.457180e+09
+Contract Duration                52534.0  1.857456e+01  3.803170e+01         0.00         1.00        10.00        30.0  3.761000e+03
+Line Item No                     53312.0  1.447620e+01  3.423945e+01         1.00         1.00         2.00        12.0  3.920000e+02
+Quantity                         53312.0  4.156313e+03  2.177766e+05         0.00         1.00         2.00       100.0  4.707500e+07
+Item Budget                      53312.0  1.479741e+06  2.081978e+07        -1.00     33183.75    150000.00    600000.0  1.641842e+09
+Award Reference No.              53312.0  5.592831e+06  1.219306e+05   1374625.00   5513054.50   5601207.00   5686662.5  5.763200e+06
+UNSPSC Code                      53312.0  4.642896e+07  9.175879e+06  12161500.00  42000000.00  42000000.00  51000000.0  9.514190e+07
+Contract Amount                  53258.0  1.293194e+06  1.911830e+07         0.01     26716.00    133126.64    537591.5  1.487013e+09
+
+====================================================================================================
+DATA UNDERSTANDING SNAPSHOT: PhilGEPS filtered to medical records (after missing-value handling)
+====================================================================================================
+Rows, Cols: 53312, 46
+Dtypes: {'Procuring Entity (PE)': 'object', 'Region': 'object', 'Province': 'object', 'City/Municipality': 'object', 'Government Branch': 'object', 'PE Organization Type': 'object', 'PE Organization Type (Grouped)': 'object', 'Bid Reference No.': 'int64', 'Notice Title': 'object', 'Classification': 'object', 'Procurement Mode': 'object', 'Business Category': 'object', 'Funding Source': 'object', 'Funding Instrument': 'object', 'Trade Agreement': 'object', 'Approved Budget of the Contract': 'float64', 'Published Date': 'object', 'Closing Date': 'object', 'Area of Delivery': 'object', 'Contract Duration': 'float64', 'Calendar Type': 'object', 'Line Item No': 'float64', 'Item Name': 'object', 'Item Description': 'object', 'Quantity': 'float64', 'UOM': 'object', 'Item Budget': 'float64', 'Bid Notice Status': 'object', 'Award Reference No.': 'float64', 'Award Title': 'object', 'UNSPSC Code': 'float64', 'UNSPSC Description': 'object', 'Published Date(Award)': 'object', 'Award Date': 'object', 'Contract Amount': 'float64', 'Award Notice Status': 'object', 'Notice to Proceed Date': 'object', 'Contract Effectivity Date': 'object', 'Contract End Date': 'object', 'Awardee Organization Name': 'object', 'Country of Awardee': 'object', 'Region of Awardee': 'object', 'Province of Awardee': 'object', 'City/Municipality of Awardee': 'object', 'Awardee Size': 'object', 'Awardee Joint Venture': 'object'}
+Duplicate rows: 17434
+Missing values (top 10):
+  - Contract Duration: 778
+Numeric summary (first columns):
+                                   count          mean           std          min          25%          50%         75%           max
+Bid Reference No.                53312.0  1.111580e+07  3.008348e+06         0.00  11734455.00  11888221.00  12052585.0  1.241981e+07
+Approved Budget of the Contract  53312.0  1.482683e+07  5.129414e+07        20.00    236500.00    932606.20   6748129.0  4.457180e+09
+Contract Duration                52534.0  1.857456e+01  3.803170e+01         0.00         1.00        10.00        30.0  3.761000e+03
+Line Item No                     53312.0  1.447620e+01  3.423945e+01         1.00         1.00         2.00        12.0  3.920000e+02
+Quantity                         53312.0  4.156313e+03  2.177766e+05         0.00         1.00         2.00       100.0  4.707500e+07
+Item Budget                      53312.0  1.479741e+06  2.081978e+07        -1.00     33183.75    150000.00    600000.0  1.641842e+09
+Award Reference No.              53312.0  5.592831e+06  1.219306e+05   1374625.00   5513054.50   5601207.00   5686662.5  5.763200e+06
+UNSPSC Code                      53312.0  4.642896e+07  9.175879e+06  12161500.00  42000000.00  42000000.00  51000000.0  9.514190e+07
+Contract Amount                  53312.0  1.292019e+06  1.910865e+07         0.01     26880.00    133126.64    537000.0  1.487013e+09

@@ -1,0 +1,93 @@
+MedFlow — CRISP-DM — Data Understanding Checkpoints (TXT)
+Source: CRISP-DM/data_preparation.py
+
+This file maps exactly where "Data Understanding" snapshots are called and what
+they validate at each stage (before/after).
+
+===============================================================================
+WHAT EACH SNAPSHOT PRINTS
+===============================================================================
+- Rows/Cols
+- Dtypes (full map if <= 60 cols; otherwise a count)
+- Key columns availability (when provided)
+- Duplicate rows count
+- Missing values count (top N columns)
+- Numeric summary (describe) for numeric columns
+
+===============================================================================
+CHECKPOINT MAP (DOH)
+===============================================================================
+DOH raw_datasets/DOH/ (CSV or Excel)
+
+1) After loading each CSV
+   Label: "DOH raw (CSV) - <filename>"
+   Purpose:
+   - Verify expected columns exist (RECIPIENT, ITEM DESCRIPTION, QUANTITY, TOTAL AMOUNT, DATE DELIVERED)
+   - Inspect missingness and duplicates before any cleaning
+
+2) After cleaning currency + headers and adding Year (for each CSV)
+   Label: "DOH after header/currency cleaning (CSV) - <filename>"
+   Purpose:
+   - Confirm column name normalization
+   - Confirm currency-like columns are now numeric where possible
+   - Confirm "Year" column presence
+
+3) After loading each Excel sheet (pre-clean)
+   Label: "DOH raw (Excel) - <filename> / sheet '<sheet_name>'"
+   Purpose:
+   - Same as (1) but per sheet
+
+4) After cleaning each Excel sheet and adding Year (post-clean)
+   Label: "DOH after header/currency cleaning (Excel) - <filename> / sheet '<sheet_name>'"
+   Purpose:
+   - Same as (2) but per sheet
+
+5) After concatenating all DOH frames (pre-imputation)
+   Label: "DOH merged (before missing-value handling)"
+   Purpose:
+   - Validate merged schema and numeric columns before imputations/derivations
+   - Check missingness/duplicates at merged-level
+
+6) After DOH missing-value handling (post-imputation)
+   Label: "DOH merged (after missing-value handling)"
+   Purpose:
+   - Confirm computed fields (TOTAL AMOUNT / UNIT COST / QUANTITY where possible)
+   - Confirm remaining missing numeric/categorical values are handled
+
+===============================================================================
+CHECKPOINT MAP (PhilGEPS)
+===============================================================================
+PhilGEPS raw_datasets/PhilGEPS/ (CSV or Excel)
+
+1) After loading each CSV
+   Label: "PhilGEPS raw (CSV) - <filename>"
+   Purpose:
+   - Verify key columns presence (UNSPSC Description, Awardee Organization Name, Contract Amount, etc.)
+   - Inspect missingness and duplicates before merging/filtering
+
+2) After loading each Excel sheet
+   Label: "PhilGEPS raw (Excel sheet) - <filename>"
+   Purpose:
+   - Same as (1) per sheet
+
+3) After concatenating all PhilGEPS frames (pre-filter, pre-imputation)
+   Label: "PhilGEPS merged (before filtering / missing-value handling)"
+   Purpose:
+   - Validate merged schema and the presence of 'UNSPSC Description'
+
+4) If 'UNSPSC Description' exists:
+   4a) After filtering medical records (pre-imputation)
+       Label: "PhilGEPS filtered to medical records (before missing-value handling)"
+       Purpose:
+       - Validate filter result size and missingness on the working dataset
+
+   4b) After missing-value handling (post-imputation)
+       Label: "PhilGEPS filtered to medical records (after missing-value handling)"
+       Purpose:
+       - Confirm numeric/categorical imputations were applied
+
+5) If 'UNSPSC Description' does NOT exist:
+   5a) After missing-value handling on unfiltered data (post-imputation)
+       Label: "PhilGEPS unfiltered (after missing-value handling)"
+       Purpose:
+       - Confirm imputations before saving the unfiltered export

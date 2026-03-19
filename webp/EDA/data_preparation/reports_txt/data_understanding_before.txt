@@ -1,0 +1,193 @@
+
+====================================================================================================
+DOH - BEFORE CLEANING / PREPROCESSING (RAW) - Data Understanding Snapshots (consolidated)
+====================================================================================================
+- Objective: Cluster recipients/items by quantities, totals, and delivery patterns (DBSCAN for anomalies, K-Means for similarity).
+- Expected key columns: ['RECIPIENT', 'ITEM DESCRIPTION', 'QUANTITY', 'UNIT COST', 'TOTAL AMOUNT', 'DATE DELIVERED']
+- Snapshots included: 4
+
+----------------------------------------------------------------------------------------------------
+Snapshot: DOH raw (Excel) - DISTRIBUTION REPORT 2022-205 (FOI REQUEST).xlsx / sheet '2022'
+Rows, Cols: 82, 10
+Missing key columns: ['DATE DELIVERED']
+Duplicate rows: 0
+Missing values (top):
+  - UNIT COST: 47
+  - DATE
+DELIVERED or PICKED-UP BY OR TO RECIPIENTS: 20
+
+----------------------------------------------------------------------------------------------------
+Snapshot: DOH raw (Excel) - DISTRIBUTION REPORT 2022-205 (FOI REQUEST).xlsx / sheet '2023'
+Rows, Cols: 1850, 10
+Missing key columns: ['DATE DELIVERED']
+Duplicate rows: 71
+Missing values (top):
+  - UNIT COST: 340
+  - DATE
+DELIVERED or PICKED-UP BY OR TO RECIPIENTS: 67
+  - PURCHASE ORDER /CONTRACT NO./SOURCE: 39
+  - QUANTITY: 1
+  - UNIT OF MEASUREMENT: 1
+
+----------------------------------------------------------------------------------------------------
+Snapshot: DOH raw (Excel) - DISTRIBUTION REPORT 2022-205 (FOI REQUEST).xlsx / sheet '2024'
+Rows, Cols: 2582, 10
+Missing key columns: ['DATE DELIVERED']
+Duplicate rows: 42
+Missing values (top):
+  - DATE
+DELIVERED or PICKED-UP BY OR TO RECIPIENTS: 15
+  - QUANTITY: 11
+  - UNIT OF MEASUREMENT: 8
+
+----------------------------------------------------------------------------------------------------
+Snapshot: DOH raw (Excel) - DISTRIBUTION REPORT 2022-205 (FOI REQUEST).xlsx / sheet '2025'
+Rows, Cols: 3705, 10
+Missing key columns: ['DATE DELIVERED']
+Duplicate rows: 39
+Missing values (top):
+  - QUANTITY: 21
+  - PURCHASE ORDER /CONTRACT NO./SOURCE: 1
+  - UNIT OF MEASUREMENT: 1
+  - DATE
+DELIVERED or PICKED-UP BY OR TO RECIPIENTS: 1
+
+====================================================================================================
+DOH - BEFORE CLEANING / PREPROCESSING (RAW) - Attribute selection notes (K-Means + DBSCAN)
+====================================================================================================
+Goal: identify meaningful attributes for similarity patterns and anomaly detection.
+Reminder: K-Means/DBSCAN need numeric feature vectors; categoricals require encoding.
+
+Recommended attribute triage (based on merged view of this stage):
+- Objective: C. Distribution Pattern Clustering (DOH)
+- Usable numeric: none detected
+- Categorical/mixed (use after encoding/aggregation):
+  - PROGRAM/
+END-USER: categorical/mixed, nunique=8, missing=0.0%
+  - UNIT OF MEASUREMENT: categorical/mixed, nunique=41, missing=0.1%
+  - RECIPIENT: must-have; dtype=object, nunique=464, missing=0.0%
+  - ITEM DESCRIPTION: must-have; dtype=object, nunique=605, missing=0.0%
+- Drop or review (too missing / too high-cardinality / noisy):
+  - PTR NUMBER: excluded_by_name_rule
+  - RECIPIENT: categorical/mixed needs review (nunique=464, missing=0.0%)
+  - ITEM DESCRIPTION: categorical/mixed needs review (nunique=605, missing=0.0%)
+  - PURCHASE ORDER /CONTRACT NO./SOURCE: excluded_by_name_rule
+  - QUANTITY: categorical/mixed needs review (nunique=3234, missing=0.4%)
+  - UNIT COST: categorical/mixed needs review (nunique=297, missing=4.7%)
+  - TOTAL AMOUNT: categorical/mixed needs review (nunique=5567, missing=0.0%)
+  - DATE
+DELIVERED or PICKED-UP BY OR TO RECIPIENTS: categorical/mixed needs review (nunique=612, missing=1.3%)
+
+====================================================================================================
+PhilGEPS - BEFORE CLEANING / PREPROCESSING (RAW) - Data Understanding Snapshots (consolidated)
+====================================================================================================
+- Objective: Select attributes that represent supplier behavior, contract scale, procurement patterns, and anomalies.
+- Expected key columns: ['UNSPSC Description', 'Awardee Organization Name', 'Contract Amount', 'Procurement Mode', 'Item Budget', 'Quantity', 'Funding Source']
+- Snapshots included: 3
+
+----------------------------------------------------------------------------------------------------
+Snapshot: PhilGEPS raw (CSV) - 2025_(APR-JUN).csv
+Rows, Cols: 372122, 46
+Duplicate rows: 41876
+Missing values (top):
+  - Awardee Joint Venture: 368908
+  - Contract End Date: 253479
+  - Contract Effectivity Date: 253479
+  - Notice to Proceed Date: 253479
+  - Awardee Size: 219828
+  - Region of Awardee: 214372
+  - Province of Awardee: 214353
+  - UNSPSC Code: 214307
+  - UNSPSC Description: 214307
+  - Contract Amount: 214266
+
+----------------------------------------------------------------------------------------------------
+Snapshot: PhilGEPS raw (CSV) - 2025_(JAN-MAR).csv
+Rows, Cols: 469569, 46
+Duplicate rows: 63908
+Missing values (top):
+  - Awardee Joint Venture: 464672
+  - Contract End Date: 293145
+  - Contract Effectivity Date: 293145
+  - Notice to Proceed Date: 293145
+  - Awardee Size: 254517
+  - UNSPSC Code: 246020
+  - UNSPSC Description: 246020
+  - Region of Awardee: 245977
+  - Province of Awardee: 245901
+  - Contract Amount: 245843
+
+----------------------------------------------------------------------------------------------------
+Snapshot: PhilGEPS raw (CSV) - 2025_(JUL-SEPT).csv
+Rows, Cols: 361502, 46
+Duplicate rows: 19102
+Missing values (top):
+  - Awardee Joint Venture: 358154
+  - Contract End Date: 308219
+  - Contract Effectivity Date: 308219
+  - Notice to Proceed Date: 308219
+  - Awardee Size: 283943
+  - Contract Amount: 281344
+  - Region of Awardee: 281269
+  - Province of Awardee: 281259
+  - UNSPSC Code: 281249
+  - UNSPSC Description: 281249
+
+====================================================================================================
+PhilGEPS - BEFORE CLEANING / PREPROCESSING (RAW) - Attribute selection notes (K-Means + DBSCAN)
+====================================================================================================
+Goal: identify meaningful attributes for similarity patterns and anomaly detection.
+Reminder: K-Means/DBSCAN need numeric feature vectors; categoricals require encoding.
+
+Recommended attribute triage (based on merged view of this stage):
+- Objective: A/B. Supplier/Awardee + Procurement Pattern (PhilGEPS)
+- Usable numeric (candidate features):
+  - Approved Budget of the Contract: numeric, missing=0.0%
+  - Contract Duration: numeric, missing=0.5%
+  - Line Item No: numeric, missing=32.9%
+  - Quantity: numeric, missing=32.9%
+  - Item Budget: numeric, missing=32.9%
+- Categorical/mixed (use after encoding/aggregation):
+  - Region: categorical/mixed, nunique=18, missing=0.0%
+  - Province: categorical/mixed, nunique=84, missing=0.0%
+  - Government Branch: categorical/mixed, nunique=4, missing=0.0%
+  - PE Organization Type: categorical/mixed, nunique=14, missing=0.0%
+  - PE Organization Type (Grouped): categorical/mixed, nunique=4, missing=0.0%
+  - Classification: categorical/mixed, nunique=4, missing=0.0%
+  - Procurement Mode: categorical/mixed, nunique=19, missing=0.0%
+  - Business Category: categorical/mixed, nunique=168, missing=0.0%
+  - Funding Source: categorical/mixed, nunique=5, missing=0.0%
+  - Funding Instrument: categorical/mixed, nunique=6, missing=0.0%
+  - Trade Agreement: categorical/mixed, nunique=7, missing=0.0%
+  - Area of Delivery: categorical/mixed, nunique=86, missing=8.1%
+  - Calendar Type: categorical/mixed, nunique=3, missing=2.5%
+  - UOM: categorical/mixed, nunique=54, missing=32.9%
+  - Bid Notice Status: categorical/mixed, nunique=6, missing=0.0%
+  - UNSPSC Description: must-have; dtype=object, nunique=6830, missing=61.6%
+- Drop or review (too missing / too high-cardinality / noisy):
+  - Procuring Entity (PE): categorical/mixed needs review (nunique=30169, missing=0.0%)
+  - City/Municipality: categorical/mixed needs review (nunique=1361, missing=0.0%)
+  - Bid Reference No.: excluded_by_name_rule
+  - Notice Title: categorical/mixed needs review (nunique=634377, missing=0.0%)
+  - Published Date: categorical/mixed needs review (nunique=273, missing=1.3%)
+  - Closing Date: categorical/mixed needs review (nunique=232, missing=2.5%)
+  - Item Name: categorical/mixed needs review (nunique=282841, missing=32.9%)
+  - Item Description: categorical/mixed needs review (nunique=417742, missing=32.9%)
+  - Award Reference No.: excluded_by_name_rule
+  - Award Title: categorical/mixed needs review (nunique=183116, missing=61.6%)
+  - UNSPSC Code: numeric but very missing (61.6%)
+  - UNSPSC Description: categorical/mixed needs review (nunique=6830, missing=61.6%)
+  - Published Date(Award): categorical/mixed needs review (nunique=268, missing=61.6%)
+  - Award Date: categorical/mixed needs review (nunique=651, missing=61.6%)
+  - Contract Amount: numeric but very missing (61.6%)
+  - Award Notice Status: categorical/mixed needs review (nunique=3, missing=61.6%)
+  - Notice to Proceed Date: categorical/mixed needs review (nunique=613, missing=71.0%)
+  - Contract Effectivity Date: categorical/mixed needs review (nunique=693, missing=71.0%)
+  - Contract End Date: categorical/mixed needs review (nunique=1291, missing=71.0%)
+  - Awardee Organization Name: categorical/mixed needs review (nunique=39936, missing=61.6%)
+  - Country of Awardee: categorical/mixed needs review (nunique=26, missing=61.6%)
+  - Region of Awardee: categorical/mixed needs review (nunique=18, missing=61.6%)
+  - Province of Awardee: categorical/mixed needs review (nunique=83, missing=61.6%)
+  - City/Municipality of Awardee: categorical/mixed needs review (nunique=1261, missing=61.6%)
+  - Awardee Size: categorical/mixed needs review (nunique=4, missing=63.0%)
+  - Awardee Joint Venture: categorical/mixed needs review (nunique=1672, missing=99.0%)
