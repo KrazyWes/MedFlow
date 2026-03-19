@@ -60,32 +60,56 @@ import pandas as pd
 # -----------------------------------------------------------------------------
 # Step 0) Import helpers (keep this script as the orchestrator)
 # -----------------------------------------------------------------------------
-# Reusable pipeline building blocks live in `CRISP-DM/prep/`:
-# - loaders: discover + load CSV/Excel sources
-# - data_understanding: consolidated reports (before/after) + clustering attribute triage
-# - eda: data-analyst visuals (missingness, distributions) saved as PNG
-# - doh/philgeps: dataset-specific cleaning + missing-value handling
 # This file focuses on sequencing the steps (CRISP-DM flow).
 
-# Allow importing the local `prep/` helper package (CRISP-DM/prep).
+# Allow importing local modules inside `CRISP-DM/`
 script_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(script_dir)
 if script_dir not in sys.path:
     sys.path.insert(0, script_dir)
 
-from prep.paths import build_visualization_paths  # noqa: E402
-from prep.logs import open_log_sinks  # noqa: E402
-from prep.loaders import (  # noqa: E402
-    CSV_EXTENSIONS,
-    EXCEL_EXTENSIONS,
-    get_supported_files,
-    load_csv,
-    load_excel,
-)
-from prep.doh import clean_doh_dataframe, handle_missing_values_doh  # noqa: E402
-from prep.philgeps import handle_missing_values_philgeps  # noqa: E402
-from prep.eda import generate_eda_visualizations  # noqa: E402
-from prep.data_understanding import (  # noqa: E402
+# -----------------------------------------------------------------------------
+# Loader utilities (replacing CRISP-DM/prep/loaders.py)
+# -----------------------------------------------------------------------------
+CSV_EXTENSIONS = (".csv",)
+EXCEL_EXTENSIONS = (".xlsx", ".xls")
+ALL_DATA_EXTENSIONS = CSV_EXTENSIONS + EXCEL_EXTENSIONS
+
+
+def get_supported_files(directory: str):
+    """Return list of (filepath, extension) for CSV/Excel files in directory."""
+    if not os.path.isdir(directory):
+        return []
+    files = []
+    for f in os.listdir(directory):
+        fp = os.path.join(directory, f)
+        if os.path.isfile(fp):
+            ext = os.path.splitext(f)[1].lower()
+            if ext in ALL_DATA_EXTENSIONS:
+                files.append((fp, ext))
+    return sorted(files, key=lambda x: x[0])
+
+
+def load_csv(path: str) -> pd.DataFrame:
+    """Load a CSV file. Uses low_memory=False to avoid mixed-type warnings."""
+    return pd.read_csv(path, low_memory=False)
+
+
+def load_excel(path: str, dtype=str) -> list[pd.DataFrame]:
+    """Load an Excel file. Returns list of DataFrames (one per sheet)."""
+    xl = pd.ExcelFile(path)
+    kwargs = {"dtype": dtype} if dtype is not None else {}
+    return [pd.read_excel(path, sheet_name=name, **kwargs) for name in xl.sheet_names]
+
+
+# -----------------------------------------------------------------------------
+# Imports (replacing CRISP-DM/prep/* modules)
+# -----------------------------------------------------------------------------
+from data_cleaning import clean_doh_dataframe, handle_missing_values_doh, handle_missing_values_philgeps  # noqa: E402
+from data_understanding import (  # noqa: E402
+    build_visualization_paths,
+    open_log_sinks,
+    generate_eda_visualizations,
     infer_time_label,
     profile_frame,
     rank_attributes_for_clustering,
@@ -245,6 +269,13 @@ if doh_files:
             log_fn=log_du_after,
         )
 
+        # Deduplication (exact full-row duplicates) BEFORE imputation
+        doh_before = len(clean_merged)
+        clean_merged = clean_merged.drop_duplicates()
+        doh_dropped = doh_before - len(clean_merged)
+        if doh_dropped > 0:
+            log_prep(f"DOH: Dropped {doh_dropped} exact duplicate rows before imputation.")
+
         # Existing logic: missing value handling + export (kept for now)
         doh_merged = handle_missing_values_doh(clean_merged)
         generate_eda_visualizations(
@@ -379,6 +410,13 @@ if philgeps_files:
                 top_n=10,
                 log_fn=log_du_after,
             )
+            # Deduplication (exact full-row duplicates) BEFORE imputation
+            pg_before = len(medical_df)
+            medical_df = medical_df.drop_duplicates()
+            pg_dropped = pg_before - len(medical_df)
+            if pg_dropped > 0:
+                log_prep(f"PhilGEPS: Dropped {pg_dropped} exact duplicate rows before imputation.")
+
             # Step 4.6) Impute missing values (numeric medians; categorical mode/N/A)
             medical_df = handle_missing_values_philgeps(medical_df)
             # Step 4.7) EDA AFTER imputation + DU snapshot
@@ -402,7 +440,8 @@ if philgeps_files:
             log_prep(f"PhilGEPS: Filtered {len(medical_df)} medical records. Saved to {output_file}")
         else:
             log_prep("PhilGEPS: 'UNSPSC Description' column not found. Saving unfiltered.")
-            # Step 4.9) Fallback: impute and export unfiltered dataset if UNSPSC Description is absent
+            # Step 4.9) Fallback: dedup + impute and export unfiltered dataset if UNSPSC Description is absent
+            df = df.drop_duplicates()
             df = handle_missing_values_philgeps(df)
             write_snapshot(
                 df,

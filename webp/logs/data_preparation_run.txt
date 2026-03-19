@@ -2,12 +2,14 @@ DOH: Loaded RAW DISTRIBUTION REPORT 2022-205 (FOI REQUEST).xlsx sheet '2022' (82
 DOH: Loaded RAW DISTRIBUTION REPORT 2022-205 (FOI REQUEST).xlsx sheet '2023' (1850 rows)
 DOH: Loaded RAW DISTRIBUTION REPORT 2022-205 (FOI REQUEST).xlsx sheet '2024' (2582 rows)
 DOH: Loaded RAW DISTRIBUTION REPORT 2022-205 (FOI REQUEST).xlsx sheet '2025' (3705 rows)
-DOH: Merged 8219 records. Saved to c:\Users\loper\Desktop\MedFlow\this_datasets\doh_medicine_distribution_2022_2025.csv
+DOH: Dropped 152 exact duplicate rows before imputation.
+DOH: Merged 8067 records. Saved to C:\Users\loper\Desktop\MedFlow\this_datasets\doh_medicine_distribution_2022_2025.csv
 PhilGEPS: Loaded RAW 2025_(APR-JUN).csv (372122 rows)
 PhilGEPS: Loaded RAW 2025_(JAN-MAR).csv (469569 rows)
 PhilGEPS: Loaded RAW 2025_(JUL-SEPT).csv (361502 rows)
-PhilGEPS: Filtered 53312 medical records. Saved to c:\Users\loper\Desktop\MedFlow\this_datasets\philgeps_2025_medical_procurement.csv
+PhilGEPS: Dropped 17434 exact duplicate rows before imputation.
+PhilGEPS: Filtered 35878 medical records. Saved to C:\Users\loper\Desktop\MedFlow\this_datasets\philgeps_2025_medical_procurement.csv
 Data preparation complete.
-Visualization logs saved: c:\Users\loper\Desktop\MedFlow\webp\logs\data_preparation_run.txt
-Data understanding BEFORE saved: c:\Users\loper\Desktop\MedFlow\webp\EDA\data_preparation\reports_txt\data_understanding_before.txt
-Data understanding AFTER saved: c:\Users\loper\Desktop\MedFlow\webp\EDA\data_preparation\reports_txt\data_understanding_after.txt
+Visualization logs saved: C:\Users\loper\Desktop\MedFlow\webp\logs\data_preparation_run.txt
+Data understanding BEFORE saved: C:\Users\loper\Desktop\MedFlow\webp\EDA\data_preparation\reports_txt\data_understanding_before.txt
+Data understanding AFTER saved: C:\Users\loper\Desktop\MedFlow\webp\EDA\data_preparation\reports_txt\data_understanding_after.txt
