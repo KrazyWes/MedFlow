@@ -1,5 +1,22 @@
 MedFlow — CRISP-DM — Data Preparation Process Visualization (TXT)
 Source: CRISP-DM/data_preparation.py
+Updated to reflect step labels (01–06) and EDA output (steps/)
+
+===============================================================================
+PIPELINE STEP LABELS
+===============================================================================
+  01 Load Raw Data
+  02 Fix Data Types
+  03 Filter Relevant Data (PhilGEPS: medical keywords; DOH: inherently relevant)
+  04 Remove Duplicates
+  05 Handle Missing Values
+  06 Final Clean Dataset Structure
+
+===============================================================================
+EDA OUTPUT LOCATIONS
+===============================================================================
+  - steps/01_load_raw/, 02_fix_data_types/, 03_filter_relevant_data/, 05_handle_missing_values/
+  - steps/04_remove_duplicates/, 06_final_clean/ (step_log.txt only)
 
 ===============================================================================
 ASCII FLOW (high-level)
@@ -9,8 +26,7 @@ START
   |
   v
 Set paths + extensions
-  - project_root
-  - output_dir = this_datasets/
+  - project_root, output_dir = this_datasets/
   - supported: .csv, .xlsx, .xls
   |
   +---------------------------+
@@ -20,50 +36,49 @@ DOH pipeline                  PhilGEPS pipeline
 Input: raw_datasets/DOH/      Input: raw_datasets/PhilGEPS/
   |                             |
   v                             v
-Discover supported files       Discover supported files
+[01] Discover supported files  [01] Discover supported files
   |                             |
   +--> If none: Skip            +--> If none: Skip
   |                             |
   v                             v
-For each file:                 For each file:
-  - If CSV: load_csv              - If CSV: load_csv
-  - If Excel: load_excel          - If Excel: load_excel (all sheets)
+Load each file/sheet           Load each file/sheet
+  (CSV: load_csv)               (CSV/Excel: load_csv or load_excel)
   |                             |
   v                             v
-Data Understanding snapshots    Data Understanding snapshots
-  - raw loaded                   - raw loaded (per file/sheet)
+Merge all frames               Merge all frames
   |                             |
   v                             v
-DOH clean: clean_doh_dataframe  Merge all loaded DataFrames
+EDA: steps/01_load_raw         EDA: steps/01_load_raw
+  |                             |
+  v                             v
+[02] clean_doh_dataframe       [03] Filter medical (UNSPSC keywords)
   - normalize headers            |
-  - strip peso/currency chars    v
-  - convert UNIT COST/TOTAL      Data Understanding snapshot
-  |                               - merged (pre-filter / pre-impute)
-  v                             |
-Add Year (CSV or sheet)         v
-  |                             Filter medical records by:
-  v                               "UNSPSC Description" contains keywords
+  - strip peso/currency          v
+  - convert UNIT COST/TOTAL    EDA: steps/03_filter_relevant_data
+  - add Year                    |
+  |                             v
+  v                           [04] Remove duplicates (drop_duplicates)
 Merge all DOH frames            |
   |                             v
-  v                             Data Understanding snapshot
-Data Understanding snapshot       - filtered (pre-impute)
-  - merged (pre-impute)         |
-  |                             v
-  v                             Missing values: handle_missing_values_philgeps
-Missing values: handle_missing_values_doh
-  - compute derived totals/      - numeric -> median (or 0)
-    unit cost/quantity           - categorical -> mode or 'N/A'
-  - numeric -> median (or 0)     |
+  v                           [05] handle_missing_values_philgeps
+EDA: steps/02_fix_data_types           - numeric -> median
+  |                             - categorical -> mode or 'N/A'
+  v                             |
+[04] Remove duplicates          v
+  (drop_duplicates)           EDA: steps/05_handle_missing_values
+  |                             |
+  v                             v
+[05] handle_missing_values_doh [06] Save to this_datasets/
+  - compute derived totals       philgeps_2025_medical_procurement.csv
+  - numeric -> median            |
   - categorical -> 'N/A'         v
-  |                             Data Understanding snapshot
-  v                               - filtered (post-impute)
-Data Understanding snapshot      |
-  - merged (post-impute)         v
-  |                             Save CSV to this_datasets/
+  |                             END
   v
-Save CSV to this_datasets/
-  - doh_medicine_distribution_2022_2025.csv
+EDA: steps/05_handle_missing_values
+  |
+  v
+[06] Save to this_datasets/
+  doh_medicine_distribution_2022_2025.csv
   |
   v
 END ("Data preparation complete.")
-

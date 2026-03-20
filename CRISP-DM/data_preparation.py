@@ -123,10 +123,10 @@ os.makedirs(output_dir, exist_ok=True)
 # -----------------------------------------------------------------------------
 # Step 1) Configure visualization/report output paths (no terminal output)
 # -----------------------------------------------------------------------------
-# Outputs are written under `webp/visualizations/`:
-# - Data Understanding TXT: `data_understanding/reports_txt/`
-# - Data Understanding EDA PNGs: `data_understanding/eda_png/`
-# - Data Preparation run log: `data_preparation/`
+# Outputs:
+#   webp/EDA/data_preparation/steps/  - step-based EDA (01_load_raw, 02_fix_data_types, ...)
+#   webp/EDA/data_preparation/data_understanding/ - data understanding snapshots
+#   webp/logs/ - run logs
 vis_paths = build_visualization_paths(project_root)
 
 # -----------------------------------------------------------------------------
@@ -150,6 +150,14 @@ log_du_after = sinks.log_du_after
 # =============================================================================
 # Data Preparation - DOH Medicine Procurement and Distribution
 # For: Distribution Pattern Clustering (C)
+#
+# Pipeline steps (labeled for identification):
+#   01 Load Raw Data
+#   02 Fix Data Types
+#   03 Filter Relevant Data (DOH: inherently medicine; no explicit filter)
+#   04 Remove Duplicates
+#   05 Handle Missing Values
+#   06 Final Clean Dataset Structure
 # =============================================================================
 doh_input_dir = os.path.join(project_root, "raw_datasets", "DOH")
 doh_output_filename = "doh_medicine_distribution_2022_2025.csv"
@@ -158,17 +166,15 @@ doh_sheets_years = ["2022", "2023", "2024", "2025"]  # Excel sheets to use if pr
 # -----------------------------------------------------------------------------
 # Step 3) DOH pipeline (Objective C: Distribution Pattern Clustering)
 # -----------------------------------------------------------------------------
-# Goal: create a clustering-ready dataset by:
-# - loading all years/sheets first (so BEFORE snapshots are reported once)
-# - producing EDA visuals (missingness/distributions)
-# - cleaning headers/currency and adding Year
-# - imputing missing values and exporting to `this_datasets/`
+# Process: Load raw -> Fix types -> Remove dupes -> Impute missing -> Export
 doh_files = get_supported_files(doh_input_dir)
 if doh_files:
-    # Step 3.1) Validate presence of key columns (for clustering & data quality checks)
+    # -------------------------------------------------------------------------
+    # STEP: 01 Load Raw Data
+    # -------------------------------------------------------------------------
+    # Process: Iterate supported files (CSV/Excel), load each sheet, concatenate.
+    # Output: raw_merged DataFrame for EDA and downstream cleaning.
     doh_key_cols = ["RECIPIENT", "ITEM DESCRIPTION", "QUANTITY", "UNIT COST", "TOTAL AMOUNT", "DATE DELIVERED"]
-
-    # Step 3.2) Load ALL raw sources first (all years/months), then proceed to cleaning.
     doh_raw_snapshots = []
     doh_loaded_raw_frames = []  # list of dicts: {"label":..., "df":...}
 
@@ -195,14 +201,15 @@ if doh_files:
             log_prep(f"DOH: Error loading {filepath}: {e}")
 
     if doh_loaded_raw_frames:
-        # Step 3.4) Consolidate all raw years/sheets and write BEFORE report + EDA
         raw_merged = pd.concat([x["df"] for x in doh_loaded_raw_frames], ignore_index=True)
+        # EDA: STEP 01 - Load Raw Data
         generate_eda_visualizations(
             raw_merged,
-            out_dir=os.path.join(vis_paths["vis_du_eda_dir"], "before", "DOH_raw_merged"),
+            out_dir=os.path.join(vis_paths["vis_eda_steps_dir"], "01_load_raw", "DOH"),
             dataset_label="DOH",
             stage_label="BEFORE (RAW merged)",
             numeric_focus=["UNIT COST", "TOTAL AMOUNT", "QUANTITY"],
+            include_correlation=True,
         )
         raw_ranking = rank_attributes_for_clustering(
             raw_merged,
@@ -221,12 +228,16 @@ if doh_files:
             log_fn=log_du_before,
         )
 
-        # Step 3.5) Apply basic cleaning to each year/sheet, add Year, then write AFTER report + EDA
+        # -------------------------------------------------------------------------
+        # STEP: 02 Fix Data Types
+        # -------------------------------------------------------------------------
+        # Process: Strip peso/currency from object cols; convert UNIT COST, TOTAL AMOUNT
+        # to numeric; normalize column headers (strip newlines). Add Year from sheet name.
         doh_clean_snapshots = []
         doh_clean_frames = []
         for item in doh_loaded_raw_frames:
             df = item["df"]
-            cleaned = clean_doh_dataframe(df)
+            cleaned = clean_doh_dataframe(df)  # <-- Fix Data Types
 
             # Add Year if available (sheet name) else infer from filename/label.
             year_val = None
@@ -243,14 +254,15 @@ if doh_files:
             doh_clean_frames.append(cleaned)
             doh_clean_snapshots.append({"label": label, "profile": profile_frame(cleaned, key_columns=doh_key_cols + ["Year"], top_n=10)})
 
-        # Consolidated AFTER cleaning snapshots — written once.
         clean_merged = pd.concat(doh_clean_frames, ignore_index=True)
+        # EDA: STEP 02 - Fix Data Types
         generate_eda_visualizations(
             clean_merged,
-            out_dir=os.path.join(vis_paths["vis_du_eda_dir"], "after", "DOH_after_basic_cleaning"),
+            out_dir=os.path.join(vis_paths["vis_eda_steps_dir"], "02_fix_data_types", "DOH"),
             dataset_label="DOH",
             stage_label="AFTER (basic cleaning, pre-imputation)",
             numeric_focus=["UNIT COST", "TOTAL AMOUNT", "QUANTITY", "Year"],
+            include_correlation=True,
         )
         clean_ranking = rank_attributes_for_clustering(
             clean_merged,
@@ -269,21 +281,34 @@ if doh_files:
             log_fn=log_du_after,
         )
 
-        # Deduplication (exact full-row duplicates) BEFORE imputation
+        # -------------------------------------------------------------------------
+        # STEP: 04 Remove Duplicates
+        # -------------------------------------------------------------------------
+        # Process: drop_duplicates() on full row; reduces redundant records before imputation.
         doh_before = len(clean_merged)
-        clean_merged = clean_merged.drop_duplicates()
+        clean_merged = clean_merged.drop_duplicates()  # <-- Remove Duplicates
         doh_dropped = doh_before - len(clean_merged)
+        step04_dir = os.path.join(vis_paths["vis_eda_steps_dir"], "04_remove_duplicates")
+        os.makedirs(step04_dir, exist_ok=True)
+        with open(os.path.join(step04_dir, "step_log.txt"), "w", encoding="utf-8") as f:
+            f.write(f"DOH: Dropped {doh_dropped} exact duplicate rows before imputation.\n")
         if doh_dropped > 0:
             log_prep(f"DOH: Dropped {doh_dropped} exact duplicate rows before imputation.")
 
-        # Existing logic: missing value handling + export (kept for now)
-        doh_merged = handle_missing_values_doh(clean_merged)
+        # -------------------------------------------------------------------------
+        # STEP: 05 Handle Missing Values
+        # -------------------------------------------------------------------------
+        # Process: Compute TOTAL=Q*UNIT_COST where possible; impute numeric with median,
+        # categorical with 'N/A'.
+        doh_merged = handle_missing_values_doh(clean_merged)  # <-- Handle Missing Values
+        # EDA: STEP 05 - Post imputation
         generate_eda_visualizations(
             doh_merged,
-            out_dir=os.path.join(vis_paths["vis_du_eda_dir"], "after", "DOH_after_imputation"),
+            out_dir=os.path.join(vis_paths["vis_eda_steps_dir"], "05_handle_missing_values", "DOH"),
             dataset_label="DOH",
             stage_label="AFTER (post-imputation)",
             numeric_focus=["UNIT COST", "TOTAL AMOUNT", "QUANTITY", "Year"],
+            include_correlation=True,
         )
         # Single consolidated snapshot after imputation
         write_snapshot(
@@ -294,8 +319,16 @@ if doh_files:
             log_fn=log_du_after,
         )
 
+        # -------------------------------------------------------------------------
+        # STEP: 06 Final Clean Dataset Structure
+        # -------------------------------------------------------------------------
+        # Process: Export consolidated DOH to this_datasets/doh_medicine_distribution_2022_2025.csv
         doh_output_path = os.path.join(output_dir, doh_output_filename)
         doh_merged.to_csv(doh_output_path, index=False)
+        step06_dir = os.path.join(vis_paths["vis_eda_steps_dir"], "06_final_clean")
+        os.makedirs(step06_dir, exist_ok=True)
+        with open(os.path.join(step06_dir, "step_log.txt"), "w", encoding="utf-8") as f:
+            f.write(f"DOH: Merged {len(doh_merged)} records. Saved to {doh_output_path}\n")
         log_prep(f"DOH: Merged {len(doh_merged)} records. Saved to {doh_output_path}")
     else:
         log_prep("DOH: No valid data loaded from files.")
@@ -306,6 +339,14 @@ else:
 # =============================================================================
 # Data Preparation - PhilGEPS Medical Procurement Filter
 # For: Supplier/Awardee Clustering (A), Medicine Procurement Pattern (B)
+#
+# Pipeline steps (labeled for identification):
+#   01 Load Raw Data
+#   02 Fix Data Types (implicit via load + imputation)
+#   03 Filter Relevant Data (UNSPSC medical keywords)
+#   04 Remove Duplicates
+#   05 Handle Missing Values
+#   06 Final Clean Dataset Structure
 # =============================================================================
 philgeps_input_dir = os.path.join(project_root, "raw_datasets", "PhilGEPS")
 philgeps_output_filename = "philgeps_2025_medical_procurement.csv"
@@ -319,13 +360,9 @@ medical_keywords = [
 pattern = "|".join(medical_keywords)
 
 # -----------------------------------------------------------------------------
-# Step 4) PhilGEPS pipeline (Objectives A/B: Supplier/Awardee + Procurement Pattern)
+# Step 4) PhilGEPS pipeline (Objectives A/B)
 # -----------------------------------------------------------------------------
-# Goal: build a medical-procurement subset suitable for clustering by:
-# - loading all year/month files first (so BEFORE snapshots are reported once)
-# - producing analyst-style EDA visuals (missingness, distributions)
-# - filtering by UNSPSC medical keywords
-# - imputing missing values and exporting the filtered dataset
+# Process: Load raw -> Filter medical -> Remove dupes -> Impute -> Export
 philgeps_files = get_supported_files(philgeps_input_dir)
 if philgeps_files:
     # Step 4.1) Key PhilGEPS columns used to judge usability for clustering
@@ -340,9 +377,12 @@ if philgeps_files:
     ]
 
     pg_raw_snapshots = []
-    pg_loaded_raw_frames = []  # list of dicts: {"label":..., "df":...}
+    pg_loaded_raw_frames = []
 
-    # Step 4.2) Load all CSV files / Excel sheets before any filtering or imputation
+    # -------------------------------------------------------------------------
+    # STEP: 01 Load Raw Data
+    # -------------------------------------------------------------------------
+    # Process: Load CSV/Excel; concatenate all sheets/files.
     for filepath, ext in philgeps_files:
         try:
             if ext in CSV_EXTENSIONS:
@@ -364,14 +404,15 @@ if philgeps_files:
             log_prep(f"PhilGEPS: Error loading {filepath}: {e}")
 
     if pg_loaded_raw_frames:
-        # Step 4.3) Merge all raw PhilGEPS sources and write BEFORE report + EDA
         pg_raw_merged = pd.concat([x["df"] for x in pg_loaded_raw_frames], ignore_index=True)
+        # EDA: STEP 01 - Load Raw Data
         generate_eda_visualizations(
             pg_raw_merged,
-            out_dir=os.path.join(vis_paths["vis_du_eda_dir"], "before", "PhilGEPS_raw_merged"),
+            out_dir=os.path.join(vis_paths["vis_eda_steps_dir"], "01_load_raw", "PhilGEPS"),
             dataset_label="PhilGEPS",
             stage_label="BEFORE (RAW merged)",
             numeric_focus=["Contract Amount", "Item Budget", "Quantity", "Approved Budget of the Contract"],
+            include_correlation=True,
         )
         pg_raw_ranking = rank_attributes_for_clustering(
             pg_raw_merged,
@@ -390,17 +431,21 @@ if philgeps_files:
             log_fn=log_du_before,
         )
 
-        # Step 4.4) Filter to medical records using UNSPSC Description keywords
+        # -------------------------------------------------------------------------
+        # STEP: 03 Filter Relevant Data
+        # -------------------------------------------------------------------------
+        # Process: Keep rows where UNSPSC Description contains medical keywords.
         df = pg_raw_merged
         if "UNSPSC Description" in df.columns:
-            medical_df = df[df["UNSPSC Description"].str.contains(pattern, case=False, na=False)]
-            # Step 4.5) EDA AFTER filtering (pre-imputation) + DU snapshot
+            medical_df = df[df["UNSPSC Description"].str.contains(pattern, case=False, na=False)]  # <-- Filter Relevant Data
+            # EDA: STEP 03 - Post filter
             generate_eda_visualizations(
                 medical_df,
-                out_dir=os.path.join(vis_paths["vis_du_eda_dir"], "after", "PhilGEPS_filtered_medical_pre_impute"),
+                out_dir=os.path.join(vis_paths["vis_eda_steps_dir"], "03_filter_relevant_data", "PhilGEPS"),
                 dataset_label="PhilGEPS",
                 stage_label="AFTER (filtered medical, pre-imputation)",
                 numeric_focus=["Contract Amount", "Item Budget", "Quantity", "Approved Budget of the Contract"],
+                include_correlation=True,
             )
             # Single consolidated snapshot (filtered) BEFORE imputation.
             write_snapshot(
@@ -410,22 +455,34 @@ if philgeps_files:
                 top_n=10,
                 log_fn=log_du_after,
             )
-            # Deduplication (exact full-row duplicates) BEFORE imputation
+            # -------------------------------------------------------------------------
+            # STEP: 04 Remove Duplicates
+            # -------------------------------------------------------------------------
+            # Process: drop_duplicates() on full row.
             pg_before = len(medical_df)
-            medical_df = medical_df.drop_duplicates()
+            medical_df = medical_df.drop_duplicates()  # <-- Remove Duplicates
             pg_dropped = pg_before - len(medical_df)
+            step04_dir = os.path.join(vis_paths["vis_eda_steps_dir"], "04_remove_duplicates")
+            os.makedirs(step04_dir, exist_ok=True)
+            step04_log = os.path.join(step04_dir, "step_log.txt")
+            with open(step04_log, "a", encoding="utf-8") as f:
+                f.write(f"PhilGEPS: Dropped {pg_dropped} exact duplicate rows before imputation.\n")
             if pg_dropped > 0:
                 log_prep(f"PhilGEPS: Dropped {pg_dropped} exact duplicate rows before imputation.")
 
-            # Step 4.6) Impute missing values (numeric medians; categorical mode/N/A)
-            medical_df = handle_missing_values_philgeps(medical_df)
-            # Step 4.7) EDA AFTER imputation + DU snapshot
+            # -------------------------------------------------------------------------
+            # STEP: 05 Handle Missing Values
+            # -------------------------------------------------------------------------
+            # Process: Numeric -> median; categorical -> mode or 'N/A'.
+            medical_df = handle_missing_values_philgeps(medical_df)  # <-- Handle Missing Values
+            # EDA: STEP 05 - Post imputation
             generate_eda_visualizations(
                 medical_df,
-                out_dir=os.path.join(vis_paths["vis_du_eda_dir"], "after", "PhilGEPS_filtered_medical_post_impute"),
+                out_dir=os.path.join(vis_paths["vis_eda_steps_dir"], "05_handle_missing_values", "PhilGEPS"),
                 dataset_label="PhilGEPS",
                 stage_label="AFTER (filtered medical, post-imputation)",
                 numeric_focus=["Contract Amount", "Item Budget", "Quantity", "Approved Budget of the Contract"],
+                include_correlation=True,
             )
             write_snapshot(
                 medical_df,
@@ -434,13 +491,21 @@ if philgeps_files:
                 top_n=10,
                 log_fn=log_du_after,
             )
-            # Step 4.8) Export prepared PhilGEPS medical subset
+            # -------------------------------------------------------------------------
+            # STEP: 06 Final Clean Dataset Structure
+            # -------------------------------------------------------------------------
+            # Process: Export to this_datasets/philgeps_2025_medical_procurement.csv
             output_file = os.path.join(output_dir, philgeps_output_filename)
             medical_df.to_csv(output_file, index=False)
+            step06_dir = os.path.join(vis_paths["vis_eda_steps_dir"], "06_final_clean")
+            os.makedirs(step06_dir, exist_ok=True)
+            step06_log = os.path.join(step06_dir, "step_log.txt")
+            with open(step06_log, "a", encoding="utf-8") as f:
+                f.write(f"PhilGEPS: Filtered {len(medical_df)} medical records. Saved to {output_file}\n")
             log_prep(f"PhilGEPS: Filtered {len(medical_df)} medical records. Saved to {output_file}")
         else:
             log_prep("PhilGEPS: 'UNSPSC Description' column not found. Saving unfiltered.")
-            # Step 4.9) Fallback: dedup + impute and export unfiltered dataset if UNSPSC Description is absent
+            # Fallback: dedup + impute and export unfiltered if UNSPSC Description is absent
             df = df.drop_duplicates()
             df = handle_missing_values_philgeps(df)
             write_snapshot(
@@ -452,6 +517,10 @@ if philgeps_files:
             )
             output_file = os.path.join(output_dir, philgeps_output_filename.replace(".csv", "_unfiltered.csv"))
             df.to_csv(output_file, index=False)
+            step06_dir = os.path.join(vis_paths["vis_eda_steps_dir"], "06_final_clean")
+            os.makedirs(step06_dir, exist_ok=True)
+            with open(os.path.join(step06_dir, "step_log.txt"), "a", encoding="utf-8") as f:
+                f.write(f"PhilGEPS: Unfiltered {len(df)} records. Saved to {output_file}\n")
     else:
         log_prep("PhilGEPS: No valid data loaded from files.")
 else:

@@ -11,5 +11,5 @@ PhilGEPS: Dropped 17434 exact duplicate rows before imputation.
 PhilGEPS: Filtered 35878 medical records. Saved to C:\Users\loper\Desktop\MedFlow\this_datasets\philgeps_2025_medical_procurement.csv
 Data preparation complete.
 Visualization logs saved: C:\Users\loper\Desktop\MedFlow\webp\logs\data_preparation_run.txt
-Data understanding BEFORE saved: C:\Users\loper\Desktop\MedFlow\webp\EDA\data_preparation\reports_txt\data_understanding_before.txt
-Data understanding AFTER saved: C:\Users\loper\Desktop\MedFlow\webp\EDA\data_preparation\reports_txt\data_understanding_after.txt
+Data understanding BEFORE saved: C:\Users\loper\Desktop\MedFlow\webp\EDA\data_preparation\data_understanding\data_understanding_before.txt
+Data understanding AFTER saved: C:\Users\loper\Desktop\MedFlow\webp\EDA\data_preparation\data_understanding\data_understanding_after.txt

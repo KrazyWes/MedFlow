@@ -105,6 +105,40 @@ def _plot_categorical_top_bars(
         plt.close()
 
 
+def _plot_correlation_heatmap(
+    df: pd.DataFrame,
+    out_path: str,
+    *,
+    title: str,
+    cols: list[str] | None = None,
+    max_cols: int = 15,
+) -> None:
+    """Plot correlation heatmap for numeric columns."""
+    import numpy as np
+
+    num = df.select_dtypes(include="number")
+    if cols:
+        cols = [c for c in cols if c in num.columns]
+        num = num[cols] if cols else num
+    if num.shape[1] < 2:
+        return
+    num = num.iloc[:, :max_cols]
+    corr = num.corr()
+    if corr.empty or corr.shape[0] < 2:
+        return
+    fig, ax = plt.subplots(figsize=(10, 8), dpi=160)
+    im = ax.imshow(corr.values, cmap="RdBu_r", vmin=-1, vmax=1, aspect="auto")
+    ax.set_xticks(range(len(corr.columns)))
+    ax.set_yticks(range(len(corr.columns)))
+    ax.set_xticklabels([_safe_filename(str(c))[:20] for c in corr.columns], rotation=45, ha="right")
+    ax.set_yticklabels([_safe_filename(str(c))[:20] for c in corr.columns])
+    plt.colorbar(im, ax=ax, label="Correlation")
+    plt.title(title)
+    plt.tight_layout()
+    plt.savefig(out_path)
+    plt.close()
+
+
 def generate_eda_visualizations(
     df: pd.DataFrame,
     *,
@@ -112,12 +146,14 @@ def generate_eda_visualizations(
     dataset_label: str,
     stage_label: str,
     numeric_focus: list[str] | None = None,
+    include_correlation: bool = True,
 ) -> None:
     """
     Data-analyst style EDA visuals:
     - Missingness bar chart (top columns)
     - Numeric histograms
     - Top-category bar charts (categorical distributions)
+    - Correlation heatmap (if numeric cols >= 2)
     """
     if df is None or df.empty:
         return
@@ -144,6 +180,14 @@ def generate_eda_visualizations(
         top_n_cols=12,
         top_k=15,
     )
+    if include_correlation and numeric_focus:
+        _plot_correlation_heatmap(
+            df,
+            os.path.join(out_dir, "correlation_heatmap.png"),
+            title=f"{title_prefix} - Numeric correlation",
+            cols=numeric_focus,
+            max_cols=12,
+        )
 
 
 def section(log_fn, title: str) -> None:
@@ -360,24 +404,33 @@ def build_visualization_paths(project_root: str) -> dict:
     """
     Current visualization folder layout:
     - webp/logs/data_preparation_run.txt
-    - webp/EDA/data_preparation/reports_txt/data_understanding_before.txt
-    - webp/EDA/data_preparation/reports_txt/data_understanding_after.txt
+    - webp/EDA/data_preparation/data_understanding/data_understanding_before.txt
+    - webp/EDA/data_preparation/data_understanding/data_understanding_after.txt
     """
     vis_root = os.path.join(project_root, "webp")
     logs_dir = os.path.join(vis_root, "logs")
 
     eda_root_dir = os.path.join(vis_root, "EDA", "data_preparation")
-    du_txt_dir = os.path.join(eda_root_dir, "reports_txt")
-    du_eda_dir = eda_root_dir  # caller appends /before and /after
+    du_txt_dir = os.path.join(eda_root_dir, "data_understanding")
+    du_eda_dir = eda_root_dir
+    eda_steps_dir = os.path.join(eda_root_dir, "steps")
+    eda_preprocessing_dir = os.path.join(vis_root, "EDA", "data_preprocessing")
+    eda_preprocessing_steps_dir = os.path.join(eda_preprocessing_dir, "steps")
 
     ensure_dir(logs_dir)
     ensure_dir(du_txt_dir)
     ensure_dir(du_eda_dir)
+    ensure_dir(eda_steps_dir)
+    ensure_dir(eda_preprocessing_dir)
+    ensure_dir(eda_preprocessing_steps_dir)
 
     return {
         "vis_root_dir": vis_root,
         "vis_du_txt_dir": du_txt_dir,
         "vis_du_eda_dir": du_eda_dir,
+        "vis_eda_steps_dir": eda_steps_dir,
+        "vis_eda_preprocessing_dir": eda_preprocessing_dir,
+        "vis_eda_preprocessing_steps_dir": eda_preprocessing_steps_dir,
         "vis_prep_dir": logs_dir,
     }
 

@@ -1,0 +1,14 @@
+MedFlow — Step 11 Final Dataset Structure — Export Summary
+============================================================
+A features: c:\Users\loper\Desktop\MedFlow\this_datasets\clustering_A_supplier_awardee_features.csv (4006 rows)
+A zscore: c:\Users\loper\Desktop\MedFlow\this_datasets\clustering_A_supplier_awardee_features_zscore.csv (4006 rows)
+A minmax: c:\Users\loper\Desktop\MedFlow\this_datasets\clustering_A_supplier_awardee_features_minmax.csv (4006 rows)
+A interpretation: c:\Users\loper\Desktop\MedFlow\this_datasets\clustering_A_supplier_awardee_interpretation.csv (4006 rows)
+B features: c:\Users\loper\Desktop\MedFlow\this_datasets\clustering_B_medicine_procurement_pattern_features.csv (35878 rows)
+B zscore: c:\Users\loper\Desktop\MedFlow\this_datasets\clustering_B_medicine_procurement_pattern_features_zscore.csv (35878 rows)
+B minmax: c:\Users\loper\Desktop\MedFlow\this_datasets\clustering_B_medicine_procurement_pattern_features_minmax.csv (35878 rows)
+B interpretation: c:\Users\loper\Desktop\MedFlow\this_datasets\clustering_B_medicine_procurement_pattern_interpretation.csv (35878 rows)
+C features: c:\Users\loper\Desktop\MedFlow\this_datasets\clustering_C_distribution_recipient_features.csv (483 rows)
+C zscore: c:\Users\loper\Desktop\MedFlow\this_datasets\clustering_C_distribution_recipient_features_zscore.csv (483 rows)
+C minmax: c:\Users\loper\Desktop\MedFlow\this_datasets\clustering_C_distribution_recipient_features_minmax.csv (483 rows)
+C interpretation: c:\Users\loper\Desktop\MedFlow\this_datasets\clustering_C_distribution_recipient_interpretation.csv (483 rows)

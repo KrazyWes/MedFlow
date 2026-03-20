@@ -1,3 +1,11 @@
+"""
+Data Cleaning - Shared utilities for DOH and PhilGEPS pipelines.
+
+Labeled steps:
+  - Fix Data Types: clean_doh_dataframe (currency conversion, header normalization)
+  - Handle Missing Values: handle_missing_values_doh, handle_missing_values_philgeps
+"""
+
 import pandas as pd
 
 
@@ -13,7 +21,11 @@ def remove_peso_and_currency_chars(value):
 
 
 def clean_doh_dataframe(df: pd.DataFrame, currency_cols=None) -> pd.DataFrame:
-    """Remove peso signs and convert currency columns to numeric."""
+    """
+    STEP: Fix Data Types
+    Process: Strip peso/currency from object cols; convert UNIT COST, TOTAL AMOUNT
+    to numeric; normalize column headers (strip newlines).
+    """
     if currency_cols is None:
         currency_cols = ["UNIT COST", "TOTAL AMOUNT"]
 
@@ -41,10 +53,11 @@ def clean_doh_dataframe(df: pd.DataFrame, currency_cols=None) -> pd.DataFrame:
 
 def handle_missing_values_doh(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Handle missing values in DOH dataset.
-    - Computable: TOTAL AMOUNT = QUANTITY * UNIT COST (and vice versa where possible)
-    - Numeric: impute with median
-    - Categorical: impute with 'N/A'
+    STEP: Handle Missing Values (DOH)
+    Process:
+      - Computable: TOTAL AMOUNT = QUANTITY * UNIT COST (and inverse where possible)
+      - Numeric: impute with median
+      - Categorical: impute with 'N/A'
     """
     df = df.copy()
     q_col = "QUANTITY"
@@ -83,9 +96,10 @@ def handle_missing_values_doh(df: pd.DataFrame) -> pd.DataFrame:
 
 def handle_missing_values_philgeps(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Handle missing values in PhilGEPS dataset.
-    - Numeric (amounts, quantities): impute with median (0 if all missing)
-    - Categorical: impute with mode, or 'N/A' if no mode
+    STEP: Handle Missing Values (PhilGEPS)
+    Process:
+      - Numeric (amounts, quantities): impute with median (0 if all missing)
+      - Categorical: impute with mode, or 'N/A' if no mode
     """
     df = df.copy()
 
