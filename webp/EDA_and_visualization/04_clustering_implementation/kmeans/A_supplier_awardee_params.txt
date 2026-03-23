@@ -1,0 +1,4 @@
+k=8
+inertia=1821.7682
+silhouette=0.3692
+output=C:\Users\loper\Desktop\MedFlow\this_datasets\clustering_A_supplier_awardee_kmeans.csv

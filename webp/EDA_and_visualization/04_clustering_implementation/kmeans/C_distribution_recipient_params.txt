@@ -1,0 +1,4 @@
+k=2
+inertia=6.2741
+silhouette=0.9556
+output=C:\Users\loper\Desktop\MedFlow\this_datasets\clustering_C_distribution_recipient_kmeans.csv

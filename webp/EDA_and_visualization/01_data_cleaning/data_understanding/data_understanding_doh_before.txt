@@ -1,0 +1,59 @@
+
+================================================================================
+DOH - BEFORE CLEANING (RAW) - Data Understanding Snapshots
+================================================================================
+- Objective: Cluster recipients by quantities, totals, delivery patterns (K-Means + DBSCAN).
+- Expected key columns: ['RECIPIENT', 'ITEM DESCRIPTION', 'QUANTITY', 'UNIT COST', 'TOTAL AMOUNT', 'DATE DELIVERED']
+- Snapshots: 4
+
+--------------------------------------------------------------------------------
+Snapshot: DOH raw (Excel) - DISTRIBUTION REPORT 2022-205 (FOI REQUEST).xlsx / sheet '2022'
+Rows, Cols: 82, 10
+Missing key columns: ['DATE DELIVERED']
+Duplicate rows: 0
+  - UNIT COST: 47
+  - DATE
+DELIVERED or PICKED-UP BY OR TO RECIPIENTS: 20
+
+--------------------------------------------------------------------------------
+Snapshot: DOH raw (Excel) - DISTRIBUTION REPORT 2022-205 (FOI REQUEST).xlsx / sheet '2023'
+Rows, Cols: 1850, 10
+Missing key columns: ['DATE DELIVERED']
+Duplicate rows: 71
+  - UNIT COST: 340
+  - DATE
+DELIVERED or PICKED-UP BY OR TO RECIPIENTS: 67
+  - PURCHASE ORDER /CONTRACT NO./SOURCE: 39
+  - QUANTITY: 1
+  - UNIT OF MEASUREMENT: 1
+
+--------------------------------------------------------------------------------
+Snapshot: DOH raw (Excel) - DISTRIBUTION REPORT 2022-205 (FOI REQUEST).xlsx / sheet '2024'
+Rows, Cols: 2582, 10
+Missing key columns: ['DATE DELIVERED']
+Duplicate rows: 42
+  - DATE
+DELIVERED or PICKED-UP BY OR TO RECIPIENTS: 15
+  - QUANTITY: 11
+  - UNIT OF MEASUREMENT: 8
+
+--------------------------------------------------------------------------------
+Snapshot: DOH raw (Excel) - DISTRIBUTION REPORT 2022-205 (FOI REQUEST).xlsx / sheet '2025'
+Rows, Cols: 3705, 10
+Missing key columns: ['DATE DELIVERED']
+Duplicate rows: 39
+  - QUANTITY: 21
+  - PURCHASE ORDER /CONTRACT NO./SOURCE: 1
+  - UNIT OF MEASUREMENT: 1
+  - DATE
+DELIVERED or PICKED-UP BY OR TO RECIPIENTS: 1
+
+================================================================================
+DOH - BEFORE CLEANING (RAW) - Attribute selection (K-Means + DBSCAN)
+================================================================================
+- Objective: C. Distribution Pattern Clustering (DOH)
+  - PROGRAM/
+END-USER: categorical/mixed, nunique=8, missing=0.0%
+  - UNIT OF MEASUREMENT: categorical/mixed, nunique=41, missing=0.1%
+  - RECIPIENT: must-have; dtype=object, nunique=464, missing=0.0%
+  - ITEM DESCRIPTION: must-have; dtype=object, nunique=605, missing=0.0%

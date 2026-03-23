@@ -1,0 +1,7 @@
+
+================================================================================
+DATA UNDERSTANDING SNAPSHOT: DOH merged (after missing-value handling)
+================================================================================
+Rows, Cols: 8067, 11
+Missing key columns: ['DATE DELIVERED']
+Duplicate rows: 0

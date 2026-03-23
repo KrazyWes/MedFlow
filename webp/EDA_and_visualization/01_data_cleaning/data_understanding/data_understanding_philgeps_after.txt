@@ -1,0 +1,23 @@
+
+================================================================================
+DATA UNDERSTANDING SNAPSHOT: PhilGEPS filtered to medical (before imputation)
+================================================================================
+Rows, Cols: 53312, 46
+Duplicate rows: 17434
+  - Awardee Joint Venture: 52728
+  - Notice to Proceed Date: 16567
+  - Contract Effectivity Date: 16567
+  - Contract End Date: 16567
+  - Awardee Size: 4953
+  - Area of Delivery: 4418
+  - Closing Date: 3626
+  - Calendar Type: 3626
+  - Published Date: 2177
+  - Contract Duration: 778
+
+================================================================================
+DATA UNDERSTANDING SNAPSHOT: PhilGEPS filtered to medical (after missing-value handling)
+================================================================================
+Rows, Cols: 35878, 46
+Duplicate rows: 0
+  - Contract Duration: 778

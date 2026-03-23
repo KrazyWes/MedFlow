@@ -1,0 +1,78 @@
+
+================================================================================
+PhilGEPS - BEFORE CLEANING (RAW) - Data Understanding Snapshots
+================================================================================
+- Objective: Supplier/awardee and procurement pattern clustering (K-Means + DBSCAN).
+- Expected key columns: ['UNSPSC Description', 'Awardee Organization Name', 'Contract Amount', 'Procurement Mode', 'Item Budget', 'Quantity', 'Funding Source']
+- Snapshots: 3
+
+--------------------------------------------------------------------------------
+Snapshot: PhilGEPS raw (CSV) - 2025_(APR-JUN).csv
+Rows, Cols: 372122, 46
+Duplicate rows: 41876
+  - Awardee Joint Venture: 368908
+  - Contract End Date: 253479
+  - Contract Effectivity Date: 253479
+  - Notice to Proceed Date: 253479
+  - Awardee Size: 219828
+  - Region of Awardee: 214372
+  - Province of Awardee: 214353
+  - UNSPSC Code: 214307
+  - UNSPSC Description: 214307
+  - Contract Amount: 214266
+
+--------------------------------------------------------------------------------
+Snapshot: PhilGEPS raw (CSV) - 2025_(JAN-MAR).csv
+Rows, Cols: 469569, 46
+Duplicate rows: 63908
+  - Awardee Joint Venture: 464672
+  - Contract End Date: 293145
+  - Contract Effectivity Date: 293145
+  - Notice to Proceed Date: 293145
+  - Awardee Size: 254517
+  - UNSPSC Code: 246020
+  - UNSPSC Description: 246020
+  - Region of Awardee: 245977
+  - Province of Awardee: 245901
+  - Contract Amount: 245843
+
+--------------------------------------------------------------------------------
+Snapshot: PhilGEPS raw (CSV) - 2025_(JUL-SEPT).csv
+Rows, Cols: 361502, 46
+Duplicate rows: 19102
+  - Awardee Joint Venture: 358154
+  - Contract End Date: 308219
+  - Contract Effectivity Date: 308219
+  - Notice to Proceed Date: 308219
+  - Awardee Size: 283943
+  - Contract Amount: 281344
+  - Region of Awardee: 281269
+  - Province of Awardee: 281259
+  - UNSPSC Code: 281249
+  - UNSPSC Description: 281249
+
+================================================================================
+PhilGEPS - BEFORE CLEANING (RAW) - Attribute selection (K-Means + DBSCAN)
+================================================================================
+- Objective: A/B. Supplier + Procurement Pattern (PhilGEPS)
+  - Approved Budget of the Contract: numeric, missing=0.0%
+  - Contract Duration: numeric, missing=0.5%
+  - Line Item No: numeric, missing=32.9%
+  - Quantity: numeric, missing=32.9%
+  - Item Budget: numeric, missing=32.9%
+  - Region: categorical/mixed, nunique=18, missing=0.0%
+  - Province: categorical/mixed, nunique=84, missing=0.0%
+  - Government Branch: categorical/mixed, nunique=4, missing=0.0%
+  - PE Organization Type: categorical/mixed, nunique=14, missing=0.0%
+  - PE Organization Type (Grouped): categorical/mixed, nunique=4, missing=0.0%
+  - Classification: categorical/mixed, nunique=4, missing=0.0%
+  - Procurement Mode: categorical/mixed, nunique=19, missing=0.0%
+  - Business Category: categorical/mixed, nunique=168, missing=0.0%
+  - Funding Source: categorical/mixed, nunique=5, missing=0.0%
+  - Funding Instrument: categorical/mixed, nunique=6, missing=0.0%
+  - Trade Agreement: categorical/mixed, nunique=7, missing=0.0%
+  - Area of Delivery: categorical/mixed, nunique=86, missing=8.1%
+  - Calendar Type: categorical/mixed, nunique=3, missing=2.5%
+  - UOM: categorical/mixed, nunique=54, missing=32.9%
+  - Bid Notice Status: categorical/mixed, nunique=6, missing=0.0%
+  - UNSPSC Description: must-have; dtype=object, nunique=6830, missing=61.6%
