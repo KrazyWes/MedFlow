@@ -14,7 +14,7 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.metrics import silhouette_score
+from sklearn.metrics import calinski_harabasz_score, davies_bouldin_score, silhouette_score
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 if script_dir not in sys.path:
@@ -29,6 +29,50 @@ def _project_root() -> str:
 
 def _data_source_for_cfg(name: str) -> str:
     return "DOH" if "distribution_recipient" in name else "PhilGEPS"
+
+
+def _plot_dbscan_spider(results: list[tuple[str, float, float]], out_dir: str) -> None:
+    """Spider chart of Silhouette, CH (norm), 1/(1+DB), Assigned ratio across datasets."""
+    full_results = []
+    ch_max = 0.0
+    for cfg_name, sil_val, noise_val in results:
+        txt_path = os.path.join(out_dir, f"{cfg_name}_evaluation.txt")
+        if os.path.exists(txt_path):
+            with open(txt_path, encoding="utf-8") as f:
+                ch_val, db_val = 0.0, 1.0
+                for line in f:
+                    if "calinski_harabasz" in line.lower() and ":" in line:
+                        ch_val = float(line.split(":")[1].strip())
+                        ch_max = max(ch_max, ch_val)
+                    elif "davies_bouldin" in line.lower() and ":" in line:
+                        db_val = float(line.split(":")[1].strip())
+            full_results.append((cfg_name, sil_val, 1.0 - noise_val, ch_val, db_val))
+    if len(full_results) < 2 or ch_max <= 0:
+        return
+    import numpy as np
+    categories = ["Silhouette", "Assigned\n(1-noise%)", "Calinski-Harabasz\n(normalized)", "Separation\n(1/(1+DB))"]
+    n_axes = len(categories)
+    angles = np.linspace(0, 2 * np.pi, n_axes, endpoint=False).tolist()
+    angles += angles[:1]
+    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(projection="polar"), dpi=160, facecolor="#f8f9fa")
+    colors = ["#e74c3c", "#e67e22", "#16a085"]
+    for i, (cfg_name, sil, assigned, ch, db) in enumerate(full_results):
+        vals = [min(1.0, sil), min(1.0, assigned), min(1.0, ch / ch_max), min(1.0, 1.0 / (1.0 + db))]
+        vals += vals[:1]
+        display = cfg_name.replace("_", " ").title()
+        ax.plot(angles, vals, "s-", linewidth=2, label=display, color=colors[i % len(colors)])
+        ax.fill(angles, vals, alpha=0.2, color=colors[i % len(colors)])
+    ax.set_theta_offset(np.pi / 2)
+    ax.set_theta_direction(-1)
+    ax.set_thetagrids(np.degrees(np.linspace(0, 2 * np.pi, n_axes, endpoint=False)), categories)
+    ax.set_ylim(0, 1.0)
+    ax.set_title("DBSCAN: Multi-Metric Comparison Across Datasets", fontsize=12, fontweight="bold", pad=16)
+    ax.legend(loc="upper right", bbox_to_anchor=(1.25, 1.0), fontsize=9)
+    ax.set_facecolor("#f8f9fa")
+    plt.tight_layout()
+    plt.savefig(os.path.join(out_dir, "comparison_spider.png"), facecolor=fig.get_facecolor(), edgecolor="none", bbox_inches="tight")
+    plt.close()
+    print(f"Saved spider comparison -> {out_dir}/comparison_spider.png")
 
 
 def _plot_dbscan_metrics(cfg_name: str, sil: float, noise_count: int, noise_ratio: float, n_samples: int, n_clusters: int, out_dir: str, data_source: str) -> None:
@@ -104,8 +148,10 @@ def main() -> None:
         noise_ratio = noise_count / len(labels)
         n_clusters = len(np.unique(labels[in_cluster]))
 
-        # --- Step 2: Compute metrics (Silhouette excl. noise, noise ratio) ---
+        # --- Step 2: Compute metrics (Silhouette, CH, DB excl. noise, noise ratio) ---
         sil = 0.0
+        ch = 0.0
+        db = 0.0
         if n_clusters >= 2 and in_cluster.sum() > 1:
             X_c = X[in_cluster]
             labels_c = labels[in_cluster]
@@ -114,14 +160,20 @@ def main() -> None:
                 rng = np.random.default_rng(42)
                 idx = rng.choice(n, 5000, replace=False)
                 sil = silhouette_score(X_c[idx], labels_c[idx])
+                ch = calinski_harabasz_score(X_c[idx], labels_c[idx])
+                db = davies_bouldin_score(X_c[idx], labels_c[idx])
             else:
                 sil = silhouette_score(X_c, labels_c)
+                ch = calinski_harabasz_score(X_c, labels_c)
+                db = davies_bouldin_score(X_c, labels_c)
 
         # --- Step 3: Write evaluation report ---
         report = f"DBSCAN Evaluation - {cfg.name}\n{'='*50}\n"
         report += f"n_samples: {len(labels)}\nn_clusters: {n_clusters}\n"
         report += f"noise_count: {noise_count}\nnoise_ratio: {noise_ratio:.4f}\n"
         report += f"silhouette_score (excl. noise): {sil:.4f}\n"
+        report += f"calinski_harabasz_score: {ch:.4f}\n"
+        report += f"davies_bouldin_score: {db:.4f}\n"
 
         with open(os.path.join(out_dir, f"{cfg.name}_evaluation.txt"), "w", encoding="utf-8") as f:
             f.write(report)
@@ -174,6 +226,9 @@ def main() -> None:
         plt.savefig(os.path.join(out_dir, "comparison_silhouette_noise.png"), facecolor=fig.get_facecolor(), edgecolor="none", bbox_inches="tight")
         plt.close()
         print(f"Saved comparison chart -> {out_dir}/comparison_silhouette_noise.png")
+
+        # Spider chart: DBSCAN metrics across datasets
+        _plot_dbscan_spider(results, out_dir)
 
     print("Evaluation DBSCAN complete.")
 

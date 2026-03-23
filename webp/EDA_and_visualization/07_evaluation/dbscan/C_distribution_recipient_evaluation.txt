@@ -5,3 +5,5 @@ n_clusters: 5
 noise_count: 236
 noise_ratio: 0.5086
 silhouette_score (excl. noise): 0.8799
+calinski_harabasz_score: 2754.3631
+davies_bouldin_score: 0.1324

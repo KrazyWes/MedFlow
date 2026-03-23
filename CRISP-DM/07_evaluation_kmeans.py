@@ -31,6 +31,49 @@ def _data_source_for_cfg(name: str) -> str:
     return "DOH" if "distribution_recipient" in name else "PhilGEPS"
 
 
+def _plot_kmeans_spider(results: list[tuple[str, float]], out_dir: str) -> None:
+    """Spider chart of Silhouette, CH (norm), 1/(1+DB) across datasets."""
+    import numpy as np
+    full_results = []
+    for cfg_name, sil in results:
+        txt_path = os.path.join(out_dir, f"{cfg_name}_evaluation.txt")
+        if os.path.exists(txt_path):
+            with open(txt_path, encoding="utf-8") as f:
+                ch_val, db_val = 0.0, 1.0
+                for line in f:
+                    if "calinski_harabasz" in line.lower() and ":" in line:
+                        ch_val = float(line.split(":")[1].strip())
+                    elif "davies_bouldin" in line.lower() and ":" in line:
+                        db_val = float(line.split(":")[1].strip())
+            full_results.append((cfg_name, sil, ch_val, db_val))
+    if len(full_results) < 2:
+        return
+    ch_max = max(r[2] for r in full_results) or 1.0
+    categories = ["Silhouette", "Calinski-Harabasz\n(normalized)", "Separation\n(1/(1+DB))"]
+    n_axes = len(categories)
+    angles = np.linspace(0, 2 * np.pi, n_axes, endpoint=False).tolist()
+    angles += angles[:1]
+    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(projection="polar"), dpi=160, facecolor="#f8f9fa")
+    colors = ["#3498db", "#27ae60", "#9b59b6"]
+    for i, (cfg_name, sil, ch, db) in enumerate(full_results):
+        vals = [min(1.0, sil), min(1.0, ch / ch_max), min(1.0, 1.0 / (1.0 + db))]
+        vals += vals[:1]
+        display = cfg_name.replace("_", " ").title()
+        ax.plot(angles, vals, "o-", linewidth=2, label=display, color=colors[i % len(colors)])
+        ax.fill(angles, vals, alpha=0.2, color=colors[i % len(colors)])
+    ax.set_theta_offset(np.pi / 2)
+    ax.set_theta_direction(-1)
+    ax.set_thetagrids(np.degrees(np.linspace(0, 2 * np.pi, n_axes, endpoint=False)), categories)
+    ax.set_ylim(0, 1.0)
+    ax.set_title("K-Means: Multi-Metric Comparison Across Datasets", fontsize=12, fontweight="bold", pad=16)
+    ax.legend(loc="upper right", bbox_to_anchor=(1.25, 1.0), fontsize=9)
+    ax.set_facecolor("#f8f9fa")
+    plt.tight_layout()
+    plt.savefig(os.path.join(out_dir, "comparison_spider.png"), facecolor=fig.get_facecolor(), edgecolor="none", bbox_inches="tight")
+    plt.close()
+    print(f"Saved spider comparison -> {out_dir}/comparison_spider.png")
+
+
 def _plot_kmeans_metrics(cfg_name: str, sil: float, ch: float, db: float, n_samples: int, n_clusters: int, out_dir: str, data_source: str) -> None:
     """Bar chart of evaluation metrics + metrics table."""
     colors = _get_data_source_colors(data_source)
@@ -165,6 +208,9 @@ def main() -> None:
         plt.savefig(os.path.join(out_dir, "comparison_silhouette.png"), facecolor=fig.get_facecolor(), edgecolor="none", bbox_inches="tight")
         plt.close()
         print(f"Saved comparison chart -> {out_dir}/comparison_silhouette.png")
+
+        # Spider chart: K-Means metrics across datasets
+        _plot_kmeans_spider(results, out_dir)
 
     print("Evaluation K-Means complete.")
 
