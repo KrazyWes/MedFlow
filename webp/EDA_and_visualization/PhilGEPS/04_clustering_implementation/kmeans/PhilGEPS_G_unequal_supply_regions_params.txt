@@ -1,0 +1,5 @@
+k=2
+method=sil_vs_k
+inertia=20.7150
+silhouette=0.9541
+output=C:\Users\loper\Desktop\MedFlow\this_datasets\PhilGEPS\04_clustering\clustering_PhilGEPS_G_unequal_supply_regions_kmeans.csv

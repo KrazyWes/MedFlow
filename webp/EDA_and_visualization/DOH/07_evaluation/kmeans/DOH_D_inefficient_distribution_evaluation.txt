@@ -1,0 +1,7 @@
+K-Means Evaluation - DOH_D_inefficient_distribution
+==================================================
+n_samples: 464
+n_clusters: 2
+silhouette_score: 0.9176
+calinski_harabasz_score: 1056.3240
+davies_bouldin_score: 0.2885

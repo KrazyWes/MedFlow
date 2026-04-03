@@ -1,0 +1,7 @@
+K-Means Evaluation - PhilGEPS_F_inefficient_distribution
+==================================================
+n_samples: 4013
+n_clusters: 2
+silhouette_score: 0.9097
+calinski_harabasz_score: 74329.2219
+davies_bouldin_score: 0.1315

@@ -1,0 +1,9 @@
+DBSCAN Evaluation - DOH_D_inefficient_distribution
+==================================================
+n_samples: 464
+n_clusters: 3
+noise_count: 50
+noise_ratio: 0.1078
+silhouette_score (excl. noise): 0.8131
+calinski_harabasz_score: 2061.5866
+davies_bouldin_score: 0.1232

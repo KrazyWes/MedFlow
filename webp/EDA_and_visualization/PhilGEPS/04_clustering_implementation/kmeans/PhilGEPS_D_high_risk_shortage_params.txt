@@ -1,0 +1,5 @@
+k=2
+method=sil_vs_k
+inertia=50.4777
+silhouette=0.7011
+output=C:\Users\loper\Desktop\MedFlow\this_datasets\PhilGEPS\04_clustering\clustering_PhilGEPS_D_high_risk_shortage_kmeans.csv

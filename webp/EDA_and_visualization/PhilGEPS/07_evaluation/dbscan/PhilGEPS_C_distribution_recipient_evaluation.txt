@@ -1,0 +1,9 @@
+DBSCAN Evaluation - PhilGEPS_C_distribution_recipient
+==================================================
+n_samples: 4013
+n_clusters: 19
+noise_count: 489
+noise_ratio: 0.1219
+silhouette_score (excl. noise): 0.5124
+calinski_harabasz_score: 270.9631
+davies_bouldin_score: 0.4249

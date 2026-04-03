@@ -1,0 +1,6 @@
+DOH: Saved DOH_A_distribution_recipient -> C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\02_data_transformation\clustering_DOH_A_distribution_recipient_features.csv (rows=464)
+DOH: Saved DOH_B_high_risk_shortage -> C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\02_data_transformation\clustering_DOH_B_high_risk_shortage_features.csv (rows=464)
+DOH: Saved DOH_C_overstocking -> C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\02_data_transformation\clustering_DOH_C_overstocking_features.csv (rows=464)
+DOH: Saved DOH_D_inefficient_distribution -> C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\02_data_transformation\clustering_DOH_D_inefficient_distribution_features.csv (rows=464)
+DOH: Saved DOH_E_unequal_supply_regions -> C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\02_data_transformation\clustering_DOH_E_unequal_supply_regions_features.csv (rows=464)
+DOH: Transformation complete (A-E feature sets + minmax).

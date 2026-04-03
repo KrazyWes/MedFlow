@@ -1,0 +1,6 @@
+Cluster Analysis DBSCAN [DOH_A_distribution_recipient]: n_clusters=2, noise=67, per-cluster outputs -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\05_cluster_analysis\dbscan\per_cluster\DOH_A_distribution_recipient
+Cluster Analysis DBSCAN [DOH_B_high_risk_shortage]: n_clusters=2, noise=31, per-cluster outputs -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\05_cluster_analysis\dbscan\per_cluster\DOH_B_high_risk_shortage
+Cluster Analysis DBSCAN [DOH_C_overstocking]: n_clusters=2, noise=32, per-cluster outputs -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\05_cluster_analysis\dbscan\per_cluster\DOH_C_overstocking
+Cluster Analysis DBSCAN [DOH_D_inefficient_distribution]: n_clusters=3, noise=50, per-cluster outputs -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\05_cluster_analysis\dbscan\per_cluster\DOH_D_inefficient_distribution
+Cluster Analysis DBSCAN [DOH_E_unequal_supply_regions]: n_clusters=2, noise=76, per-cluster outputs -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\05_cluster_analysis\dbscan\per_cluster\DOH_E_unequal_supply_regions
+Cluster Analysis DBSCAN complete.

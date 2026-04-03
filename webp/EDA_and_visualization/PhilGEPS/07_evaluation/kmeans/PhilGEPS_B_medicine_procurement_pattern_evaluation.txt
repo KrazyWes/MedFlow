@@ -1,0 +1,7 @@
+K-Means Evaluation - PhilGEPS_B_medicine_procurement_pattern
+==================================================
+n_samples: 35878
+n_clusters: 7
+silhouette_score: 0.6488
+calinski_harabasz_score: 7686.8360
+davies_bouldin_score: 0.8958

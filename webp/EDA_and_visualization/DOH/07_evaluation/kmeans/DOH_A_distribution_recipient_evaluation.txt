@@ -1,0 +1,7 @@
+K-Means Evaluation - DOH_A_distribution_recipient
+==================================================
+n_samples: 464
+n_clusters: 2
+silhouette_score: 0.9351
+calinski_harabasz_score: 1728.3085
+davies_bouldin_score: 0.2736

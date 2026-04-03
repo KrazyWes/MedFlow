@@ -1,5 +1,17 @@
 """
-Shared utilities for CRISP-DM pipeline (Data Cleaning, Transformation, EDA, Clustering).
+Shared utilities for the MedFlow CRISP-DM scripts (cleaning → clustering).
+
+Rough map (search for the same banner text):
+  - Data loaders: CSV/Excel discovery, `load_csv` / `load_excel`
+  - EDA: missingness, histograms, correlation, `generate_eda_visualizations`, path builders
+  - Logging: `LogSinks` + `open_log_sinks` for prep / data-understanding text files
+  - Dataset registry: `DatasetConfig`, `get_doh_dataset_configs`, `get_philgeps_dataset_configs`
+    (each row points at one `*_features_minmax.csv` and lists ID columns for exports)
+  - Transformation helpers: numeric coercion, scaling, IQR outlier dumps + boxplots
+  - Clustering helpers: `load_features` pulls the minmax matrix for a config
+
+`get_dataset_configs()` still points at the old flat `this_datasets/02_...` paths — only there
+for backwards compatibility; new work uses `get_doh_dataset_configs` / `get_philgeps_dataset_configs`.
 """
 
 from __future__ import annotations
@@ -15,6 +27,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler  # type: ignore[i
 
 
 def _project_root() -> str:
+    """Parent of `CRISP-DM/` (the repo root that holds `raw_datasets`, `webp`, …)."""
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -75,15 +88,121 @@ def _get_data_source_colors(data_source: str | None) -> dict:
     return {"primary": "#2c3e50", "secondary": "#7f8c8d", "accent": "#bdc3c7", "bg": "#ecf0f1"}
 
 
-def _add_data_source_badge(ax, data_source: str | None) -> None:
-    """Add data source badge (DOH/PhilGEPS) to plot corner."""
+def _plot_cmap_safe(name: str):
+    """Matplotlib 3.7+ registry vs older `cm.get_cmap` compatibility."""
+    try:
+        reg = plt.colormaps
+        if hasattr(reg, "get_cmap"):
+            return reg.get_cmap(name)
+        return reg[name]
+    except Exception:
+        return plt.cm.get_cmap(name)
+
+
+def chart_distinct_colors(n: int) -> list[tuple]:
+    """Well-separated hues for many overlaid lines (radar, spider, multi-series bars)."""
+    if n <= 0:
+        return []
+    cmap = _plot_cmap_safe("turbo")
+    if n == 1:
+        return [cmap(0.55)]
+    return [cmap(0.06 + 0.88 * i / (n - 1)) for i in range(n)]
+
+
+def chart_gradient_bar_colors(theme: dict, n: int, *, flip: bool = False) -> list[tuple]:
+    """Linear blend primary -> secondary for ranked bars (e.g. top-10, left-to-right metrics)."""
+    import matplotlib.colors as mcolors
+
+    a = np.array(mcolors.to_rgba(theme["primary"]))
+    b = np.array(mcolors.to_rgba(theme["secondary"]))
+    if n <= 0:
+        return []
+    t = np.linspace(0.0, 1.0, n)
+    if flip:
+        t = t[::-1]
+    out: list[tuple] = []
+    for ti in t:
+        rgba = a + (b - a) * float(ti)
+        rgba[3] = 1.0
+        out.append(tuple(float(x) for x in rgba))
+    return out
+
+
+def chart_bar_edge_color(rgba: tuple, *, factor: float = 0.38) -> tuple:
+    """Dark rim so neighboring fills (bars or radar bands) do not read as one blob."""
+    r, g, b, _a = rgba
+    return (max(r * factor, 0.0), max(g * factor, 0.0), max(b * factor, 0.0), 1.0)
+
+
+# Max-contrast categorical colors for polar "spider" overlays (NOT a smooth gradient).
+_SPIDER_COMPARISON_HEX = [
+    "#0072B2",
+    "#E69F00",
+    "#009E73",
+    "#D55E00",
+    "#CC79A7",
+    "#5328AD",
+    "#56B4E9",
+    "#F0E442",
+    "#000000",
+    "#994F00",
+    "#117733",
+    "#882255",
+    "#44AA99",
+    "#DDAA33",
+]
+
+
+# `tight_layout(rect=...)` margins so figure footers and outside legends sit in empty margin,
+# not on top of plotted data. Values are [left, bottom, right, top] in figure coordinates.
+FIG_RECT_WITH_FOOTER: list[float] = [0.03, 0.15, 0.97, 0.94]
+FIG_RECT_HEATMAP: list[float] = [0.08, 0.16, 0.82, 0.92]
+FIG_RECT_LEGEND_RIGHT: list[float] = [0.06, 0.16, 0.72, 0.94]
+
+
+def chart_spider_comparison_colors(n: int) -> list[tuple]:
+    """
+    Colors for multi-dataset comparison spider charts (step 07).
+
+    `turbo` / evenly-sampled continuous maps put nearby lines in similar hues; this uses a fixed
+    qualitative list (colorblind-friendly base) then golden-ratio HSV spacing if n is huge.
+    """
+    import matplotlib.colors as mcolors
+
+    if n <= 0:
+        return []
+    if n <= len(_SPIDER_COMPARISON_HEX):
+        return [mcolors.to_rgba(h) for h in _SPIDER_COMPARISON_HEX[:n]]
+    from colorsys import hsv_to_rgb
+
+    out: list[tuple] = []
+    phi = 0.618033988749895
+    for i in range(n):
+        h = (i * phi) % 1.0
+        r, g, b = hsv_to_rgb(h, 0.85, 0.9)
+        out.append((r, g, b, 1.0))
+    return out
+
+
+def _add_data_source_badge(ax, data_source: str | None, *, footer_y: float | None = None) -> None:
+    """Place Source label in the figure margin below axes so it does not cover plotted data."""
     if not data_source:
         return
+    fig = ax.get_figure()
     src = str(data_source).upper()
     colors = _get_data_source_colors(data_source)
-    ax.text(0.98, 0.98, f"Source: {src}", transform=ax.transAxes, fontsize=10,
-            fontweight="bold", va="top", ha="right", bbox=dict(boxstyle="round,pad=0.4",
-            facecolor=colors["accent"], edgecolor=colors["primary"], alpha=0.9))
+    y = 0.04 if footer_y is None else float(footer_y)
+    fig.text(
+        0.5,
+        y,
+        f"Source: {src}",
+        transform=fig.transFigure,
+        fontsize=9,
+        fontweight="bold",
+        ha="center",
+        va="bottom",
+        bbox=dict(boxstyle="round,pad=0.35", facecolor=colors["accent"], edgecolor=colors["primary"], alpha=0.95),
+    )
 
 
 def _safe_filename(s: str) -> str:
@@ -106,14 +225,18 @@ def _plot_missingness_bar(df: pd.DataFrame, out_path: str, *, title: str, top_n:
         return
     colors = _get_data_source_colors(data_source)
     fig, ax = plt.subplots(figsize=(12, 7), dpi=160, facecolor=colors["bg"])
-    bars = ax.barh(range(len(miss)), miss.values[::-1], color=colors["secondary"], edgecolor=colors["primary"], linewidth=1.2)
+    n_miss = len(miss)
+    grad = chart_gradient_bar_colors(colors, n_miss, flip=True)
+    bar_cols = grad[::-1]
+    bar_edg = [chart_bar_edge_color(c) for c in bar_cols]
+    ax.barh(range(n_miss), miss.values[::-1], color=bar_cols, edgecolor=bar_edg, linewidth=1.05)
     ax.set_yticks(range(len(miss)))
     ax.set_yticklabels([_human_readable_label(str(x))[:45] for x in miss.index[::-1]], fontsize=10)
     ax.set_xlabel("Number of missing values", fontsize=12, fontweight="bold")
     ax.set_title(title, fontsize=13, fontweight="bold", pad=12)
     ax.set_facecolor(colors["bg"])
+    plt.tight_layout(rect=FIG_RECT_WITH_FOOTER)
     _add_data_source_badge(ax, data_source)
-    plt.tight_layout()
     plt.savefig(out_path, facecolor=fig.get_facecolor(), edgecolor="none", bbox_inches="tight")
     plt.close()
 
@@ -146,8 +269,8 @@ def _plot_numeric_hists(
         ax.set_xlabel(_human_readable_label(c), fontsize=11)
         ax.set_ylabel("Number of records", fontsize=11)
         ax.set_facecolor(colors["bg"])
+        plt.tight_layout(rect=FIG_RECT_WITH_FOOTER)
         _add_data_source_badge(ax, data_source)
-        plt.tight_layout()
         plt.savefig(os.path.join(out_dir, f"hist_{_safe_filename(c)}.png"), facecolor=fig.get_facecolor(), edgecolor="none", bbox_inches="tight")
         plt.close()
 
@@ -162,7 +285,13 @@ def _plot_categorical_top_bars(
     data_source: str | None = None,
 ) -> None:
     _ensure_dir(out_dir)
-    obj_cols = [c for c in df.columns if df[c].dtype == object]
+    obj_cols = [
+        c
+        for c in df.columns
+        if pd.api.types.is_object_dtype(df[c])
+        or pd.api.types.is_string_dtype(df[c])
+        or isinstance(df[c].dtype, pd.CategoricalDtype)
+    ]
     if not obj_cols:
         return
     scored: list[tuple[int, str]] = []
@@ -178,14 +307,18 @@ def _plot_categorical_top_bars(
         if vc.empty:
             continue
         fig, ax = plt.subplots(figsize=(12, 7), dpi=160, facecolor=colors["bg"])
-        bars = ax.barh(range(len(vc)), vc.values[::-1], color=colors["secondary"], edgecolor=colors["primary"], linewidth=1.0)
+        nv = len(vc)
+        grad = chart_gradient_bar_colors(colors, nv, flip=True)
+        bar_cols = grad[::-1]
+        bar_edg = [chart_bar_edge_color(c) for c in bar_cols]
+        ax.barh(range(nv), vc.values[::-1], color=bar_cols, edgecolor=bar_edg, linewidth=1.0)
         ax.set_yticks(range(len(vc)))
         ax.set_yticklabels([_human_readable_label(str(x))[:50] for x in vc.index[::-1]], fontsize=10)
         ax.set_xlabel("Count (number of records)", fontsize=12, fontweight="bold")
         ax.set_title(f"{title_prefix} - Top {top_k} values for: {_human_readable_label(c)}", fontsize=12, fontweight="bold", pad=10)
         ax.set_facecolor(colors["bg"])
+        plt.tight_layout(rect=FIG_RECT_WITH_FOOTER)
         _add_data_source_badge(ax, data_source)
-        plt.tight_layout()
         plt.savefig(os.path.join(out_dir, f"cat_top_{_safe_filename(c)}.png"), facecolor=fig.get_facecolor(), edgecolor="none", bbox_inches="tight")
         plt.close()
 
@@ -219,8 +352,8 @@ def _plot_correlation_heatmap(
     cbar = plt.colorbar(im, ax=ax, label="Correlation (-1 to +1: negative to positive)", shrink=0.8)
     ax.set_title(title, fontsize=13, fontweight="bold", pad=12)
     ax.set_facecolor(colors["bg"])
+    plt.tight_layout(rect=FIG_RECT_HEATMAP)
     _add_data_source_badge(ax, data_source)
-    plt.tight_layout()
     plt.savefig(out_path, facecolor=fig.get_facecolor(), edgecolor="none", bbox_inches="tight")
     plt.close()
 
@@ -272,8 +405,8 @@ def _plot_summary_table(
             cell.set_text_props(color="#1a1a1a", fontweight="normal", fontsize=11)
             cell.set_facecolor(colors["bg"] if i % 2 == 1 else "#e8eef2")
     ax.set_title(f"{title}", fontsize=14, fontweight="bold", pad=16, color="#1a1a1a")
+    plt.tight_layout(rect=FIG_RECT_WITH_FOOTER)
     _add_data_source_badge(ax, data_source)
-    plt.tight_layout()
     plt.savefig(out_path, facecolor=fig.get_facecolor(), edgecolor="none", bbox_inches="tight")
     plt.close()
 
@@ -440,7 +573,7 @@ def write_snapshot(df: pd.DataFrame, label: str, *, key_columns: list[str] | Non
 
 
 def build_visualization_paths(project_root: str) -> dict:
-    """Step: Build paths for EDA outputs (01_data_cleaning/steps, logs, etc.)."""
+    """Legacy layout under webp/EDA_and_visualization (flat). Prefer `build_source_visualization_paths`."""
     vis_root = os.path.join(project_root, "webp")
     logs_dir = os.path.join(vis_root, "logs")
     ev_dir = os.path.join(vis_root, "EDA_and_visualization")
@@ -456,6 +589,51 @@ def build_visualization_paths(project_root: str) -> dict:
         "vis_eda_preprocessing_dir": step02_dir, "vis_eda_preprocessing_steps_dir": eda_preprocessing_steps_dir,
         "vis_prep_dir": logs_dir,
     }
+
+
+def build_source_visualization_paths(project_root: str, source: str) -> dict:
+    """EDA + logs under webp/EDA_and_visualization/{DOH|PhilGEPS} and webp/logs/{DOH|PhilGEPS}."""
+    from sources_paths import data_root_doh, data_root_philgeps, logs_dir_doh, logs_dir_philgeps, webp_root_doh, webp_root_philgeps
+
+    src = source.upper()
+    if src == "DOH":
+        ev_root = webp_root_doh()
+        logs_root = logs_dir_doh()
+        data_mark = data_root_doh()
+    else:
+        ev_root = webp_root_philgeps()
+        logs_root = logs_dir_philgeps()
+        data_mark = data_root_philgeps()
+
+    step01_dir = os.path.join(ev_root, "01_data_cleaning")
+    du_txt_dir = os.path.join(step01_dir, "data_understanding")
+    eda_steps_dir = os.path.join(step01_dir, "steps")
+    step02_dir = os.path.join(ev_root, "02_data_transformation")
+    eda_preprocessing_steps_dir = os.path.join(step02_dir, "steps")
+    for d in (logs_root, du_txt_dir, step01_dir, eda_steps_dir, step02_dir, eda_preprocessing_steps_dir):
+        _ensure_dir(d)
+    os.makedirs(data_mark, exist_ok=True)
+    return {
+        "vis_root_dir": os.path.join(project_root, "webp"),
+        "ev_source_root": ev_root,
+        "data_root_source": data_mark,
+        "vis_du_txt_dir": du_txt_dir,
+        "vis_eda_steps_dir": eda_steps_dir,
+        "vis_eda_preprocessing_dir": step02_dir,
+        "vis_eda_preprocessing_steps_dir": eda_preprocessing_steps_dir,
+        "vis_prep_dir": logs_root,
+    }
+
+
+def data_source_for_dataset_name(name: str) -> str:
+    """Infer DOH vs PhilGEPS from dataset config name (new or legacy)."""
+    if name.startswith("DOH_"):
+        return "DOH"
+    if name.startswith("PhilGEPS_"):
+        return "PhilGEPS"
+    if "distribution_recipient" in name:
+        return "DOH"
+    return "PhilGEPS"
 
 
 @dataclass
@@ -500,7 +678,8 @@ def open_log_sinks(*, prep_log_path: str, du_before_log_path: str, du_after_log_
 
 
 # -----------------------------------------------------------------------------
-# Step: Clustering config - dataset paths (minmax), id columns for A, B, C
+# Clustering config: one DatasetConfig per analysis lens (DOH A–E, PhilGEPS A–G).
+# path_minmax = input to k-means/DBSCAN; id_columns = keys shown in step 8 CSV exports.
 # -----------------------------------------------------------------------------
 @dataclass
 class DatasetConfig:
@@ -510,6 +689,7 @@ class DatasetConfig:
 
 
 def get_dataset_configs() -> list[DatasetConfig]:
+    """Legacy combined configs (old flat this_datasets paths). Prefer get_doh_dataset_configs / get_philgeps_dataset_configs."""
     root = _project_root()
     trans_dir = os.path.join(root, "this_datasets", "02_data_transformation")
     return [
@@ -530,6 +710,88 @@ def get_dataset_configs() -> list[DatasetConfig]:
             name="C_distribution_recipient",
             path_minmax=os.path.join(trans_dir, "clustering_C_distribution_recipient_features_minmax.csv"),
             id_columns=["RECIPIENT", "top_program", "top_item_description"],
+        ),
+    ]
+
+
+def get_doh_dataset_configs() -> list[DatasetConfig]:
+    from sources_paths import data_root_doh
+
+    t = os.path.join(data_root_doh(), "02_data_transformation")
+    rid = ["RECIPIENT", "top_program", "top_item_description"]
+    return [
+        DatasetConfig(
+            name="DOH_A_distribution_recipient",
+            path_minmax=os.path.join(t, "clustering_DOH_A_distribution_recipient_features_minmax.csv"),
+            id_columns=rid,
+        ),
+        DatasetConfig(
+            name="DOH_B_high_risk_shortage",
+            path_minmax=os.path.join(t, "clustering_DOH_B_high_risk_shortage_features_minmax.csv"),
+            id_columns=rid,
+        ),
+        DatasetConfig(
+            name="DOH_C_overstocking",
+            path_minmax=os.path.join(t, "clustering_DOH_C_overstocking_features_minmax.csv"),
+            id_columns=rid,
+        ),
+        DatasetConfig(
+            name="DOH_D_inefficient_distribution",
+            path_minmax=os.path.join(t, "clustering_DOH_D_inefficient_distribution_features_minmax.csv"),
+            id_columns=rid,
+        ),
+        DatasetConfig(
+            name="DOH_E_unequal_supply_regions",
+            path_minmax=os.path.join(t, "clustering_DOH_E_unequal_supply_regions_features_minmax.csv"),
+            id_columns=rid,
+        ),
+    ]
+
+
+def get_philgeps_dataset_configs() -> list[DatasetConfig]:
+    from sources_paths import data_root_philgeps
+
+    t = os.path.join(data_root_philgeps(), "02_data_transformation")
+    id_b = [
+        "Awardee Organization Name", "Item Name", "UNSPSC Description", "Region of Awardee",
+        "Procurement Mode", "Funding Source", "Award Reference No.", "UNSPSC Code",
+    ]
+    id_c = ["DISTRIBUTION_UNIT_KEY", "Awardee Organization Name", "Region of Awardee"]
+    return [
+        DatasetConfig(
+            name="PhilGEPS_A_supplier_awardee",
+            path_minmax=os.path.join(t, "clustering_PhilGEPS_A_supplier_awardee_features_minmax.csv"),
+            id_columns=["Awardee Organization Name"],
+        ),
+        DatasetConfig(
+            name="PhilGEPS_B_medicine_procurement_pattern",
+            path_minmax=os.path.join(t, "clustering_PhilGEPS_B_medicine_procurement_pattern_features_minmax.csv"),
+            id_columns=id_b,
+        ),
+        DatasetConfig(
+            name="PhilGEPS_C_distribution_recipient",
+            path_minmax=os.path.join(t, "clustering_PhilGEPS_C_distribution_recipient_features_minmax.csv"),
+            id_columns=id_c,
+        ),
+        DatasetConfig(
+            name="PhilGEPS_D_high_risk_shortage",
+            path_minmax=os.path.join(t, "clustering_PhilGEPS_D_high_risk_shortage_features_minmax.csv"),
+            id_columns=id_c,
+        ),
+        DatasetConfig(
+            name="PhilGEPS_E_overstocking",
+            path_minmax=os.path.join(t, "clustering_PhilGEPS_E_overstocking_features_minmax.csv"),
+            id_columns=id_c,
+        ),
+        DatasetConfig(
+            name="PhilGEPS_F_inefficient_distribution",
+            path_minmax=os.path.join(t, "clustering_PhilGEPS_F_inefficient_distribution_features_minmax.csv"),
+            id_columns=id_c,
+        ),
+        DatasetConfig(
+            name="PhilGEPS_G_unequal_supply_regions",
+            path_minmax=os.path.join(t, "clustering_PhilGEPS_G_unequal_supply_regions_features_minmax.csv"),
+            id_columns=id_c,
         ),
     ]
 
@@ -602,9 +864,14 @@ def analyze_outliers_iqr_and_boxplots(
         ax.set_title(f"{dataset_label} - Distribution and outliers: {_human_readable_label(c)}", fontsize=12, fontweight="bold")
         ax.set_ylabel(_human_readable_label(c), fontsize=11)
         ax.set_facecolor(colors["bg"])
+        plt.tight_layout(rect=FIG_RECT_WITH_FOOTER)
         _add_data_source_badge(ax, data_source)
-        plt.tight_layout()
-        plt.savefig(os.path.join(out_dir, f"boxplot__{c}.png"), facecolor=fig.get_facecolor(), edgecolor="none", bbox_inches="tight")
+        plt.savefig(
+            os.path.join(out_dir, f"boxplot__{_safe_filename(c)}.png"),
+            facecolor=fig.get_facecolor(),
+            edgecolor="none",
+            bbox_inches="tight",
+        )
         plt.close()
     outlier_masks = {}
     for c in feature_cols:

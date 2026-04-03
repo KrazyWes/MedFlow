@@ -1,0 +1,8 @@
+Cluster Analysis DBSCAN [PhilGEPS_A_supplier_awardee]: n_clusters=11, noise=41, per-cluster outputs -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\05_cluster_analysis\dbscan\per_cluster\PhilGEPS_A_supplier_awardee
+Cluster Analysis DBSCAN [PhilGEPS_B_medicine_procurement_pattern]: n_clusters=16, noise=15, per-cluster outputs -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\05_cluster_analysis\dbscan\per_cluster\PhilGEPS_B_medicine_procurement_pattern
+Cluster Analysis DBSCAN [PhilGEPS_C_distribution_recipient]: n_clusters=19, noise=489, per-cluster outputs -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\05_cluster_analysis\dbscan\per_cluster\PhilGEPS_C_distribution_recipient
+Cluster Analysis DBSCAN [PhilGEPS_D_high_risk_shortage]: n_clusters=2, noise=76, per-cluster outputs -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\05_cluster_analysis\dbscan\per_cluster\PhilGEPS_D_high_risk_shortage
+Cluster Analysis DBSCAN [PhilGEPS_E_overstocking]: n_clusters=2, noise=58, per-cluster outputs -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\05_cluster_analysis\dbscan\per_cluster\PhilGEPS_E_overstocking
+Cluster Analysis DBSCAN [PhilGEPS_F_inefficient_distribution]: n_clusters=3, noise=36, per-cluster outputs -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\05_cluster_analysis\dbscan\per_cluster\PhilGEPS_F_inefficient_distribution
+Cluster Analysis DBSCAN [PhilGEPS_G_unequal_supply_regions]: n_clusters=12, noise=591, per-cluster outputs -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\05_cluster_analysis\dbscan\per_cluster\PhilGEPS_G_unequal_supply_regions
+Cluster Analysis DBSCAN complete.

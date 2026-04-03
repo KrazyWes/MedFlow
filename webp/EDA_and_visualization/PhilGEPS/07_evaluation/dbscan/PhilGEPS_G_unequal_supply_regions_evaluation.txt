@@ -1,0 +1,9 @@
+DBSCAN Evaluation - PhilGEPS_G_unequal_supply_regions
+==================================================
+n_samples: 4013
+n_clusters: 12
+noise_count: 591
+noise_ratio: 0.1473
+silhouette_score (excl. noise): 0.5383
+calinski_harabasz_score: 144.2093
+davies_bouldin_score: 0.3710

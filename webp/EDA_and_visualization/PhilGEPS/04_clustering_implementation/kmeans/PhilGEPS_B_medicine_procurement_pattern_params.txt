@@ -1,0 +1,5 @@
+k=7
+method=sil_vs_k
+inertia=2339.2529
+silhouette=0.6488
+output=C:\Users\loper\Desktop\MedFlow\this_datasets\PhilGEPS\04_clustering\clustering_PhilGEPS_B_medicine_procurement_pattern_kmeans.csv

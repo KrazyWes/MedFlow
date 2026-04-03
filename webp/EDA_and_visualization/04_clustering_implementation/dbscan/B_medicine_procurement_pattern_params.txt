@@ -1,7 +1,0 @@
-eps=0.0204
-min_samples=10
-n_clusters=49
-noise_count=1952
-noise_ratio=0.0544
-silhouette=0.3521
-output=C:\Users\loper\Desktop\MedFlow\this_datasets\04_clustering\clustering_B_medicine_procurement_pattern_dbscan.csv

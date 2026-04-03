@@ -1,0 +1,10 @@
+Evaluation DBSCAN [PhilGEPS_A_supplier_awardee]: sil=0.3449, noise=1.0% -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\dbscan
+Evaluation DBSCAN [PhilGEPS_B_medicine_procurement_pattern]: sil=0.8321, noise=0.0% -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\dbscan
+Evaluation DBSCAN [PhilGEPS_C_distribution_recipient]: sil=0.5124, noise=12.2% -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\dbscan
+Evaluation DBSCAN [PhilGEPS_D_high_risk_shortage]: sil=0.6156, noise=1.9% -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\dbscan
+Evaluation DBSCAN [PhilGEPS_E_overstocking]: sil=0.5794, noise=1.4% -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\dbscan
+Evaluation DBSCAN [PhilGEPS_F_inefficient_distribution]: sil=0.8776, noise=0.9% -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\dbscan
+Evaluation DBSCAN [PhilGEPS_G_unequal_supply_regions]: sil=0.5383, noise=14.7% -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\dbscan
+Saved comparison chart -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\dbscan/comparison_silhouette_noise.png
+Saved spider comparison -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\dbscan/comparison_spider.png
+Evaluation DBSCAN complete.

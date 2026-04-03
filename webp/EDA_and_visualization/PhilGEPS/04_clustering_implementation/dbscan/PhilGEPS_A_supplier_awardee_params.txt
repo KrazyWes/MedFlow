@@ -1,0 +1,10 @@
+eps=0.8750577871014753
+min_samples=7
+n_clusters=11
+noise_count=41
+noise_ratio=0.0102
+silhouette=0.3449
+selection_method=silhouette_x_assigned_ratio
+output=C:\Users\loper\Desktop\MedFlow\this_datasets\PhilGEPS\04_clustering\clustering_PhilGEPS_A_supplier_awardee_dbscan.csv
+
+# Parameter selection: k-distance median -> eps sensitivity (noise/assigned ratio) -> best eps

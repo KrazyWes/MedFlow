@@ -1,0 +1,5 @@
+k=2
+method=sil_vs_k
+inertia=42.2642
+silhouette=0.5897
+output=C:\Users\loper\Desktop\MedFlow\this_datasets\PhilGEPS\04_clustering\clustering_PhilGEPS_E_overstocking_kmeans.csv

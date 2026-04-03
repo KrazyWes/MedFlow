@@ -1,0 +1,9 @@
+DBSCAN Evaluation - PhilGEPS_B_medicine_procurement_pattern
+==================================================
+n_samples: 35878
+n_clusters: 16
+noise_count: 15
+noise_ratio: 0.0004
+silhouette_score (excl. noise): 0.8321
+calinski_harabasz_score: 5325.8091
+davies_bouldin_score: 0.2496

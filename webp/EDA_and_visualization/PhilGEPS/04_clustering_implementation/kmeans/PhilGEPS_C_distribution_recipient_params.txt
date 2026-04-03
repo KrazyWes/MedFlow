@@ -1,0 +1,5 @@
+k=2
+method=sil_vs_k
+inertia=17.9660
+silhouette=0.9560
+output=C:\Users\loper\Desktop\MedFlow\this_datasets\PhilGEPS\04_clustering\clustering_PhilGEPS_C_distribution_recipient_kmeans.csv

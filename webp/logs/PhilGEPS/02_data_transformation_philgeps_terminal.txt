@@ -1,0 +1,8 @@
+PhilGEPS: Saved PhilGEPS_A_supplier_awardee -> C:\Users\loper\Desktop\MedFlow\this_datasets\PhilGEPS\02_data_transformation\clustering_PhilGEPS_A_supplier_awardee_features.csv (rows=4006)
+PhilGEPS: Saved PhilGEPS_B_medicine_procurement_pattern -> C:\Users\loper\Desktop\MedFlow\this_datasets\PhilGEPS\02_data_transformation\clustering_PhilGEPS_B_medicine_procurement_pattern_features.csv (rows=35878)
+PhilGEPS: Saved PhilGEPS_C_distribution_recipient -> C:\Users\loper\Desktop\MedFlow\this_datasets\PhilGEPS\02_data_transformation\clustering_PhilGEPS_C_distribution_recipient_features.csv (rows=4013)
+PhilGEPS: Saved PhilGEPS_D_high_risk_shortage -> C:\Users\loper\Desktop\MedFlow\this_datasets\PhilGEPS\02_data_transformation\clustering_PhilGEPS_D_high_risk_shortage_features.csv (rows=4013)
+PhilGEPS: Saved PhilGEPS_E_overstocking -> C:\Users\loper\Desktop\MedFlow\this_datasets\PhilGEPS\02_data_transformation\clustering_PhilGEPS_E_overstocking_features.csv (rows=4013)
+PhilGEPS: Saved PhilGEPS_F_inefficient_distribution -> C:\Users\loper\Desktop\MedFlow\this_datasets\PhilGEPS\02_data_transformation\clustering_PhilGEPS_F_inefficient_distribution_features.csv (rows=4013)
+PhilGEPS: Saved PhilGEPS_G_unequal_supply_regions -> C:\Users\loper\Desktop\MedFlow\this_datasets\PhilGEPS\02_data_transformation\clustering_PhilGEPS_G_unequal_supply_regions_features.csv (rows=4013)
+PhilGEPS: Transformation complete (A-G).

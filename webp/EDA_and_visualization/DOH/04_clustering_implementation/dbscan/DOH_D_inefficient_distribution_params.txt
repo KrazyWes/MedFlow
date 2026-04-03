@@ -1,0 +1,10 @@
+eps=0.024312360842235006
+min_samples=4
+n_clusters=3
+noise_count=50
+noise_ratio=0.1078
+silhouette=0.8131
+selection_method=silhouette_x_assigned_ratio
+output=C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\04_clustering\clustering_DOH_D_inefficient_distribution_dbscan.csv
+
+# Parameter selection: k-distance median -> eps sensitivity (noise/assigned ratio) -> best eps

@@ -1,75 +1,92 @@
-# CRISP-DM Modeling Phase
+# Modeling phase (clustering)
 
-The Modeling phase applies unsupervised clustering algorithms to prepared data to identify patterns and group similar facilities/medicines by procurement and distribution behavior.
-
----
-
-## Algorithm Selection ✓
-
-| Algorithm | Script | Purpose |
-|-----------|--------|---------|
-| **K-Means** | `04_clustering_implementation_kmeans.py` | Partitions data into k clusters (pre-defined number) |
-| **DBSCAN** | `04_clustering_implementation_dbscan.py` | Detects clusters of varying shapes, handles noise/outliers (-1) |
+This file is the **methodology cheat sheet**: what algorithms run, what files they read, and what metrics appear in step 7. For disk paths and filenames, use `OUTPUT_LAYOUT.md`. For commands and script locations, use `RUN_PIPELINE.md`.
 
 ---
 
-## Parameter Tuning ✓
+## Scope
 
-### K-Means
-- **Elbow Method**: Generates elbow plot (`*_elbow.png`) to suggest k
-- **Silhouette Score**: Automatically selects k ∈ [2, k_max] that maximizes silhouette
-- **Output**: `*_params.txt` with k, inertia, silhouette
+Unsupervised clustering on **MinMax-scaled** feature matrices produced in step 2. Each **lens** (DOH A–E, PhilGEPS A–G) is a separate table with its own engineered columns — see `get_doh_dataset_configs` / `get_philgeps_dataset_configs` in `_common.py`.
 
-### DBSCAN
-- **epsilon (ε)**: Heuristic via k-NN distance median; candidates = 0.8×, 1×, 1.2×, 1.5× suggested ε
-- **min_samples**: `max(2, min(10, 2×n_features))`
-- **Selection**: Prefers ≥2 clusters and &lt;70% noise; falls back to best available
-- **Output**: `*_params.txt` with eps, min_samples, n_clusters, noise_count, silhouette
+**End-to-end:** `python main.py` → `CRISP-DM/run_all.py` → all DOH steps 01–08, then PhilGEPS 01–08.
 
 ---
 
-## Model Training & Cluster Assignment ✓
+## Algorithms
 
-| Dataset | Entities Clustered | Features |
-|---------|--------------------|----------|
-| **A_supplier_awardee** | PhilGEPS suppliers/awardees | contract_amount_total, num_awards, regions_served, etc. |
-| **B_medicine_procurement_pattern** | Procurement patterns (awardee × item × region × mode × funding) | item_budget, quantity, procurement mode, funding source |
-| **C_distribution_recipient** | DOH recipients (facilities) | medicines_received, quantity_total, delivery_frequency |
+| Algorithm | Scripts | What it does |
+|-----------|---------|----------------|
+| **K-means** | `DOH/04_clustering_implementation_kmeans_doh.py`, `PhilGEPS/04_clustering_implementation_kmeans_philgeps.py` | Partitions into k clusters; k chosen by silhouette over a bounded grid (with safeguards for small n). |
+| **DBSCAN** | `DOH/04_clustering_implementation_dbscan_doh.py`, `PhilGEPS/04_clustering_implementation_dbscan_philgeps.py` | Density clusters; label `-1` = noise/outliers. ε from k-distance style heuristics; `min_samples` scales with feature dimensionality. |
 
-- **Input**: MinMax-scaled features from `02_data_transformation`
-- **Output**: Each row gets `cluster_kmeans` or `cluster_dbscan` (DBSCAN: -1 = noise)
+Scripts live under `CRISP-DM/DOH/` and `CRISP-DM/PhilGEPS/`; run with working directory `CRISP-DM/` (as `run_all.py` does).
 
 ---
 
-## Evaluation Metrics ✓
+## Inputs and outputs (modeling-relevant)
 
-| Metric | K-Means | DBSCAN | Interpretation |
-|--------|---------|--------|----------------|
-| **Silhouette** | ✓ | ✓ (excl. noise) | Cohesion vs separation |
-| **Calinski–Harabasz** | ✓ | — | Cluster separation |
-| **Davies–Bouldin** | ✓ | — | Cohesion + separation |
-| **Noise ratio** | — | ✓ | % of points labeled as noise |
+| Artifact | Path pattern |
+|----------|----------------|
+| Scaled features (model input) | `this_datasets/{DOH|PhilGEPS}/02_data_transformation/clustering_*_features_minmax.csv` |
+| K-means labels | `…/04_clustering/clustering_*_kmeans.csv` (`cluster_kmeans`) |
+| DBSCAN labels | `…/04_clustering/clustering_*_dbscan.csv` (`cluster_dbscan`) |
 
-Output: `07_evaluation/*/*_evaluation.txt`
-
----
-
-## Mapping to Study Objectives
-
-| Objective | Implementation |
-|-----------|----------------|
-| *Group public health facilities based on procurement and distribution behavior* | A (suppliers), B (procurement patterns), C (distribution recipients) clustering |
-| *Cluster summaries, visualizations, comparative profiles* | `05_cluster_analysis` (sizes, feature profiles), `06_visualization` (PCA plots, bar charts) |
-| *Evaluate K-means vs DBSCAN with silhouette, cohesion, separation* | `07_evaluation` (silhouette, CH, Davies–Bouldin) |
+Downstream steps only consume these labeled CSVs plus the same feature columns for silhouette / PCA plots.
 
 ---
 
-## Run Order
+## Parameter tuning (short)
 
-1. `01_data_cleaning_doh.py` + `01_data_cleaning_philgeps.py`
-2. `02_data_transformation_doh.py` + `02_data_transformation_philgeps.py`
-3. `04_clustering_implementation_kmeans.py`
-4. `04_clustering_implementation_dbscan.py`
-5. `05_cluster_analysis_kmeans.py` + `05_cluster_analysis_dbscan.py`
-6. `06_visualization_kmeans.py` + `06_visualization_dbscan.py`
-7. `07_evaluation_kmeans.py` + `07_evaluation_dbscan.py`
+**K-means:** sweep k, pick k with best silhouette (subsample if n is huge so the metric is affordable).
+
+**DBSCAN:** ε multipliers around a k-NN suggestion; prefer solutions with at least two clusters and a sane noise rate. Large-N PhilGEPS uses subsampling **only** during the ε search, not for the final assignment.
+
+Artifacts (plots, `*_params.txt`) sit under `webp/EDA_and_visualization/.../04_clustering_implementation/`.
+
+---
+
+## Steps after clustering
+
+| Step | Role |
+|------|------|
+| 05 `*_cluster_analysis_*` | Cluster sizes, per-cluster CSV exports, feature profiles |
+| 06 `*_visualization_*` | PCA 2D/3D and per-cluster views |
+| 07 `*_evaluation_*` | Metric figures + text summaries |
+| 08 `*_final_output_bundle_*` | Condensed “thesis pack” per lens × algorithm (`output_bundle.py`) |
+
+---
+
+## Evaluation metrics
+
+| Metric | K-means | DBSCAN |
+|--------|---------|--------|
+| Silhouette | yes | yes (excluding noise `-1`) |
+| Calinski–Harabasz | yes | yes when ≥2 non-noise clusters |
+| Davies–Bouldin | yes | yes when ≥2 non-noise clusters |
+| Noise share | — | yes (DBSCAN-specific) |
+
+Figures: `webp/EDA_and_visualization/{DOH|PhilGEPS}/07_evaluation/{kmeans|dbscan}/`.
+
+---
+
+## Mapping to research goals
+
+| Goal | Where it shows up |
+|------|-------------------|
+| Separate behavioral groups per lens | One clustering run per `DatasetConfig` |
+| Compare k-means vs DBSCAN | Parallel outputs + step 7 + step 8 bundles |
+| Explain clusters to a reader | Step 6–7 plots + step 8 top-10 / radar / CSV |
+
+---
+
+## Manual rerun order
+
+From `CRISP-DM/`:
+
+1. `DOH/01_*` → `02_*` → `03_*`
+2. `DOH/04_kmeans_*` → `DOH/04_dbscan_*`
+3. `DOH/05_*` … `DOH/08_*`
+
+Repeat with `PhilGEPS/` and `*_philgeps.py`.
+
+Or run `python main.py` once from the repo root.

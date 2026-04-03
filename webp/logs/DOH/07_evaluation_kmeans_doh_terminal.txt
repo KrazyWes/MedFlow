@@ -1,0 +1,10 @@
+Evaluation K-Means [DOH_A_distribution_recipient]: sil=0.9351, CH=1728.3085, DB=0.2736 -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\07_evaluation\kmeans
+Evaluation K-Means [DOH_B_high_risk_shortage]: sil=0.8219, CH=640.3721, DB=0.3726 -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\07_evaluation\kmeans
+Evaluation K-Means [DOH_C_overstocking]: sil=0.8232, CH=628.6979, DB=0.4506 -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\07_evaluation\kmeans
+Evaluation K-Means [DOH_D_inefficient_distribution]: sil=0.9176, CH=1056.3240, DB=0.2885 -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\07_evaluation\kmeans
+Evaluation K-Means [DOH_E_unequal_supply_regions]: sil=0.9213, CH=1304.5667, DB=0.2985 -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\07_evaluation\kmeans
+Saved comparison chart -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\07_evaluation\kmeans/comparison_silhouette.png
+C:\Users\loper\Desktop\MedFlow\CRISP-DM\DOH\07_evaluation_kmeans_doh.py:97: UserWarning: Tight layout not applied. The left and right margins cannot be made large enough to accommodate all Axes decorations.
+  plt.tight_layout(rect=[0.02, 0.06, 0.62, 0.88])
+Saved spider comparison -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\07_evaluation\kmeans/comparison_spider.png
+Evaluation K-Means complete.

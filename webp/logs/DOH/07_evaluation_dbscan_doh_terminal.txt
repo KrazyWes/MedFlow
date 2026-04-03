@@ -1,0 +1,10 @@
+Evaluation DBSCAN [DOH_A_distribution_recipient]: sil=0.7708, noise=14.4% -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\07_evaluation\dbscan
+Evaluation DBSCAN [DOH_B_high_risk_shortage]: sil=0.5153, noise=6.7% -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\07_evaluation\dbscan
+Evaluation DBSCAN [DOH_C_overstocking]: sil=0.6094, noise=6.9% -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\07_evaluation\dbscan
+Evaluation DBSCAN [DOH_D_inefficient_distribution]: sil=0.8131, noise=10.8% -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\07_evaluation\dbscan
+Evaluation DBSCAN [DOH_E_unequal_supply_regions]: sil=0.8209, noise=16.4% -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\07_evaluation\dbscan
+Saved comparison chart -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\07_evaluation\dbscan/comparison_silhouette_noise.png
+C:\Users\loper\Desktop\MedFlow\CRISP-DM\DOH\07_evaluation_dbscan_doh.py:96: UserWarning: Tight layout not applied. The left and right margins cannot be made large enough to accommodate all Axes decorations.
+  plt.tight_layout(rect=[0.02, 0.06, 0.58, 0.88])
+Saved spider comparison -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\07_evaluation\dbscan/comparison_spider.png
+Evaluation DBSCAN complete.

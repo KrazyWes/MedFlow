@@ -1,0 +1,7 @@
+PhilGEPS EDA: Cleaned -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\03_exploratory_data_analysis/01_cleaned
+PhilGEPS EDA: PhilGEPS_A_features -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\03_exploratory_data_analysis/02_PhilGEPS_A_features
+PhilGEPS EDA: PhilGEPS_A_minmax -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\03_exploratory_data_analysis/02_PhilGEPS_A_minmax
+PhilGEPS EDA: PhilGEPS_B_features -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\03_exploratory_data_analysis/02_PhilGEPS_B_features
+PhilGEPS EDA: PhilGEPS_B_minmax -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\03_exploratory_data_analysis/02_PhilGEPS_B_minmax
+PhilGEPS EDA: PhilGEPS_C_minmax -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\03_exploratory_data_analysis/02_PhilGEPS_C_minmax
+PhilGEPS EDA complete.

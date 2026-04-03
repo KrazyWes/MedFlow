@@ -1,0 +1,25 @@
+DBSCAN [DOH_A_distribution_recipient]: Saved eps sensitivity -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\dbscan\DOH_A_distribution_recipient_eps_sensitivity.csv
+DBSCAN [DOH_A_distribution_recipient]: fitting full data with selected eps=0.020591 ...
+DBSCAN [DOH_A_distribution_recipient]: Saved clustering results across eps -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\dbscan\DOH_A_distribution_recipient_clustering_results_across_eps.png
+DBSCAN [DOH_A_distribution_recipient]: Saved eps sensitivity plot -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\dbscan\DOH_A_distribution_recipient_eps_sensitivity_plot.png
+DBSCAN [DOH_A_distribution_recipient]: eps=0.0206, min_samples=4, clusters=2, noise=67 (14.4%), sil=0.7708 -> C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\04_clustering\clustering_DOH_A_distribution_recipient_dbscan.csv
+DBSCAN [DOH_B_high_risk_shortage]: Saved eps sensitivity -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\dbscan\DOH_B_high_risk_shortage_eps_sensitivity.csv
+DBSCAN [DOH_B_high_risk_shortage]: fitting full data with selected eps=0.068071 ...
+DBSCAN [DOH_B_high_risk_shortage]: Saved clustering results across eps -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\dbscan\DOH_B_high_risk_shortage_clustering_results_across_eps.png
+DBSCAN [DOH_B_high_risk_shortage]: Saved eps sensitivity plot -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\dbscan\DOH_B_high_risk_shortage_eps_sensitivity_plot.png
+DBSCAN [DOH_B_high_risk_shortage]: eps=0.0681, min_samples=4, clusters=2, noise=31 (6.7%), sil=0.5153 -> C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\04_clustering\clustering_DOH_B_high_risk_shortage_dbscan.csv
+DBSCAN [DOH_C_overstocking]: Saved eps sensitivity -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\dbscan\DOH_C_overstocking_eps_sensitivity.csv
+DBSCAN [DOH_C_overstocking]: fitting full data with selected eps=0.049083 ...
+DBSCAN [DOH_C_overstocking]: Saved clustering results across eps -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\dbscan\DOH_C_overstocking_clustering_results_across_eps.png
+DBSCAN [DOH_C_overstocking]: Saved eps sensitivity plot -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\dbscan\DOH_C_overstocking_eps_sensitivity_plot.png
+DBSCAN [DOH_C_overstocking]: eps=0.0491, min_samples=4, clusters=2, noise=32 (6.9%), sil=0.6094 -> C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\04_clustering\clustering_DOH_C_overstocking_dbscan.csv
+DBSCAN [DOH_D_inefficient_distribution]: Saved eps sensitivity -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\dbscan\DOH_D_inefficient_distribution_eps_sensitivity.csv
+DBSCAN [DOH_D_inefficient_distribution]: fitting full data with selected eps=0.024312 ...
+DBSCAN [DOH_D_inefficient_distribution]: Saved clustering results across eps -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\dbscan\DOH_D_inefficient_distribution_clustering_results_across_eps.png
+DBSCAN [DOH_D_inefficient_distribution]: Saved eps sensitivity plot -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\dbscan\DOH_D_inefficient_distribution_eps_sensitivity_plot.png
+DBSCAN [DOH_D_inefficient_distribution]: eps=0.0243, min_samples=4, clusters=3, noise=50 (10.8%), sil=0.8131 -> C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\04_clustering\clustering_DOH_D_inefficient_distribution_dbscan.csv
+DBSCAN [DOH_E_unequal_supply_regions]: Saved eps sensitivity -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\dbscan\DOH_E_unequal_supply_regions_eps_sensitivity.csv
+DBSCAN [DOH_E_unequal_supply_regions]: fitting full data with selected eps=0.023250 ...
+DBSCAN [DOH_E_unequal_supply_regions]: Saved clustering results across eps -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\dbscan\DOH_E_unequal_supply_regions_clustering_results_across_eps.png
+DBSCAN [DOH_E_unequal_supply_regions]: Saved eps sensitivity plot -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\dbscan\DOH_E_unequal_supply_regions_eps_sensitivity_plot.png
+DBSCAN [DOH_E_unequal_supply_regions]: eps=0.0233, min_samples=4, clusters=2, noise=76 (16.4%), sil=0.8209 -> C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\04_clustering\clustering_DOH_E_unequal_supply_regions_dbscan.csv

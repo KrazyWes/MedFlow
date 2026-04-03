@@ -1,0 +1,15 @@
+Bundle [PhilGEPS_A_supplier_awardee][kmeans] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\08_output_to_use\kmeans\A_supplier_awardee
+Bundle [PhilGEPS_A_supplier_awardee][dbscan] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\08_output_to_use\dbscan\A_supplier_awardee
+Bundle [PhilGEPS_B_medicine_procurement_pattern][kmeans] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\08_output_to_use\kmeans\B_medicine_procurement_pattern
+Bundle [PhilGEPS_B_medicine_procurement_pattern][dbscan] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\08_output_to_use\dbscan\B_medicine_procurement_pattern
+Bundle [PhilGEPS_C_distribution_recipient][kmeans] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\08_output_to_use\kmeans\C_distribution_recipient
+Bundle [PhilGEPS_C_distribution_recipient][dbscan] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\08_output_to_use\dbscan\C_distribution_recipient
+Bundle [PhilGEPS_D_high_risk_shortage][kmeans] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\08_output_to_use\kmeans\D_high_risk_shortage
+Bundle [PhilGEPS_D_high_risk_shortage][dbscan] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\08_output_to_use\dbscan\D_high_risk_shortage
+Bundle [PhilGEPS_E_overstocking][kmeans] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\08_output_to_use\kmeans\E_overstocking
+Bundle [PhilGEPS_E_overstocking][dbscan] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\08_output_to_use\dbscan\E_overstocking
+Bundle [PhilGEPS_F_inefficient_distribution][kmeans] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\08_output_to_use\kmeans\F_inefficient_distribution
+Bundle [PhilGEPS_F_inefficient_distribution][dbscan] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\08_output_to_use\dbscan\F_inefficient_distribution
+Bundle [PhilGEPS_G_unequal_supply_regions][kmeans] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\08_output_to_use\kmeans\G_unequal_supply_regions
+Bundle [PhilGEPS_G_unequal_supply_regions][dbscan] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\08_output_to_use\dbscan\G_unequal_supply_regions
+Step 8 output bundles finished for PhilGEPS.

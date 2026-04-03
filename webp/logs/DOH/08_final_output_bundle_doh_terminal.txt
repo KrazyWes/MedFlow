@@ -1,0 +1,11 @@
+Bundle [DOH_A_distribution_recipient][kmeans] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\08_output_to_use\kmeans\A_distribution_recipient
+Bundle [DOH_A_distribution_recipient][dbscan] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\08_output_to_use\dbscan\A_distribution_recipient
+Bundle [DOH_B_high_risk_shortage][kmeans] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\08_output_to_use\kmeans\B_high_risk_shortage
+Bundle [DOH_B_high_risk_shortage][dbscan] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\08_output_to_use\dbscan\B_high_risk_shortage
+Bundle [DOH_C_overstocking][kmeans] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\08_output_to_use\kmeans\C_overstocking
+Bundle [DOH_C_overstocking][dbscan] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\08_output_to_use\dbscan\C_overstocking
+Bundle [DOH_D_inefficient_distribution][kmeans] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\08_output_to_use\kmeans\D_inefficient_distribution
+Bundle [DOH_D_inefficient_distribution][dbscan] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\08_output_to_use\dbscan\D_inefficient_distribution
+Bundle [DOH_E_unequal_supply_regions][kmeans] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\08_output_to_use\kmeans\E_unequal_supply_regions
+Bundle [DOH_E_unequal_supply_regions][dbscan] -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\08_output_to_use\dbscan\E_unequal_supply_regions
+Step 8 output bundles finished for DOH.

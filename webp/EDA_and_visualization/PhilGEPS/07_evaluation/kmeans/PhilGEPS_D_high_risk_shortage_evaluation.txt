@@ -1,0 +1,7 @@
+K-Means Evaluation - PhilGEPS_D_high_risk_shortage
+==================================================
+n_samples: 4013
+n_clusters: 2
+silhouette_score: 0.7011
+calinski_harabasz_score: 10062.1427
+davies_bouldin_score: 0.4848

@@ -1,0 +1,9 @@
+DBSCAN Evaluation - PhilGEPS_A_supplier_awardee
+==================================================
+n_samples: 4006
+n_clusters: 11
+noise_count: 41
+noise_ratio: 0.0102
+silhouette_score (excl. noise): 0.3449
+calinski_harabasz_score: 379.8621
+davies_bouldin_score: 1.0834

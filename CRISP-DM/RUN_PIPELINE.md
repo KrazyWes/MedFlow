@@ -1,64 +1,87 @@
-# MedFlow CRISP-DM Pipeline (Clustering)
+# MedFlow CRISP-DM pipeline
 
-Run scripts in order. Each step depends on outputs from previous steps.
+This document is the **operator’s view**: how to run the code and where scripts live. For the folder tree after a successful run, use `OUTPUT_LAYOUT.md`. For clustering methodology, use `MODELING_PHASE.md`.
 
-## Pipeline Structure
+## Data flow (one sentence)
 
-| Step | Script | Description |
-|------|--------|-------------|
-| 1 | `01_data_cleaning_doh.py` | Clean DOH medicine distribution data |
-| 1 | `01_data_cleaning_philgeps.py` | Clean PhilGEPS medical procurement data |
-| 2 | `02_data_transformation_doh.py` | Transform DOH → C (distribution features) |
-| 2 | `02_data_transformation_philgeps.py` | Transform PhilGEPS → A, B (supplier + procurement features) |
-| 3 | `03_exploratory_data_analysis_doh.py` | EDA on DOH data |
-| 3 | `03_exploratory_data_analysis_philgeps.py` | EDA on PhilGEPS data |
-| 4 | `04_clustering_implementation_kmeans.py` | K-Means on A, B, C |
-| 4 | `04_clustering_implementation_dbscan.py` | DBSCAN on A, B, C |
-| 5 | `05_cluster_analysis_kmeans.py` | Cluster profiles (K-Means) |
-| 5 | `05_cluster_analysis_dbscan.py` | Cluster profiles (DBSCAN) |
-| 6 | `06_visualization_kmeans.py` | PCA scatter plots (K-Means) |
-| 6 | `06_visualization_dbscan.py` | PCA scatter plots (DBSCAN) |
-| 7 | `07_evaluation_kmeans.py` | Silhouette, CH, DB scores (K-Means) |
-| 7 | `07_evaluation_dbscan.py` | Silhouette, noise ratio (DBSCAN) |
+Raw files in `raw_datasets/{DOH|PhilGEPS}/` → cleaned CSVs → engineered feature matrices (MinMax for clustering) → cluster labels (k-means + DBSCAN) → figures and evaluation under `webp/` → step 8 “bundle” packs per lens.
 
-## Quick Run (full pipeline)
+Everything downstream of raw data is **split by source**: parallel trees under `this_datasets/`, `webp/EDA_and_visualization/`, and `webp/logs/`.
+
+---
+
+## Run commands
+
+**Full clean rebuild** (typical before archiving a thesis run):
 
 ```bash
-cd CRISP-DM
-python 01_data_cleaning_doh.py
-python 01_data_cleaning_philgeps.py
-python 02_data_transformation_doh.py
-python 02_data_transformation_philgeps.py
-python 03_exploratory_data_analysis_doh.py
-python 03_exploratory_data_analysis_philgeps.py
-python 04_clustering_implementation_kmeans.py
-python 04_clustering_implementation_dbscan.py
-python 05_cluster_analysis_kmeans.py
-python 05_cluster_analysis_dbscan.py
-python 06_visualization_kmeans.py
-python 06_visualization_dbscan.py
-python 07_evaluation_kmeans.py
-python 07_evaluation_dbscan.py
+python main.py --fresh
 ```
 
-## Output Paths
+That runs `CRISP-DM/00_clear_pipeline_outputs.py` (wipes regenerated assets; **never** deletes `raw_datasets/`), then `CRISP-DM/run_all.py`.
 
-All EDA and visualization outputs are under `webp/EDA_and_visualization/`, matching pipeline structure:
+**Clear only** (no clustering rerun):
 
-| Step | Script | Output folder |
-|------|--------|---------------|
-| 1 | 01_data_cleaning_* | `01_data_cleaning/steps/`, `01_data_cleaning/data_understanding/` |
-| 2 | 02_data_transformation_* | `02_data_transformation/steps/` |
-| 3 | 03_exploratory_data_analysis_* | `03_exploratory_data_analysis/DOH/`, `03_exploratory_data_analysis/PhilGEPS/` |
-| 4 | 04_clustering_implementation_* | `04_clustering_implementation/kmeans/`, `04_clustering_implementation/dbscan/` |
-| 5 | 05_cluster_analysis_* | `05_cluster_analysis/kmeans/`, `05_cluster_analysis/dbscan/` |
-| 6 | 06_visualization_* | `06_visualization/kmeans/`, `06_visualization/dbscan/` |
-| 7 | 07_evaluation_* | `07_evaluation/kmeans/`, `07_evaluation/dbscan/` |
+```bash
+python CRISP-DM/00_clear_pipeline_outputs.py
+```
 
-Logs: `webp/logs/`
+**Incremental run** (reuse existing CSVs/figures where steps succeed):
 
-## Datasets (A, B, C)
+```bash
+python main.py
+```
 
-- **A**: Supplier/Awardee clustering (PhilGEPS)
-- **B**: Medicine procurement pattern (PhilGEPS)
-- **C**: Distribution recipient clustering (DOH)
+---
+
+## Where the Python files are
+
+| Location | Contents |
+|----------|----------|
+| `CRISP-DM/DOH/` | DOH steps `01`–`08` (`*_doh.py`) |
+| `CRISP-DM/PhilGEPS/` | PhilGEPS steps `01`–`08` (`*_philgeps.py`) |
+| `CRISP-DM/` (root of that folder) | `run_all.py`, `00_clear_pipeline_outputs.py`, `_common.py`, `sources_paths.py`, `output_bundle.py`, `log_tee.py` |
+
+Each step script adds `CRISP-DM/` to `sys.path` so imports resolve no matter which subfolder the file sits in.
+
+---
+
+## Step order (must stay in this sequence)
+
+| Step | DOH (`CRISP-DM/DOH/`) | PhilGEPS (`CRISP-DM/PhilGEPS/`) |
+|------|----------------------|----------------------------------|
+| 1 | `01_data_cleaning_doh.py` | `01_data_cleaning_philgeps.py` |
+| 2 | `02_data_transformation_doh.py` | `02_data_transformation_philgeps.py` |
+| 3 | `03_exploratory_data_analysis_doh.py` | `03_exploratory_data_analysis_philgeps.py` |
+| 4 | `04_clustering_implementation_kmeans_*`, then `04_clustering_implementation_dbscan_*` | same file names |
+| 5 | `05_cluster_analysis_kmeans_*`, `05_cluster_analysis_dbscan_*` | same |
+| 6 | `06_visualization_kmeans_*`, `06_visualization_dbscan_*` | same |
+| 7 | `07_evaluation_kmeans_*`, `07_evaluation_dbscan_*` | same |
+| 8 | `08_final_output_bundle_doh.py` | `08_final_output_bundle_philgeps.py` |
+
+K-means is always run **before** DBSCAN at step 4 so both algorithms read the same feature files. Steps 5–7 repeat k-means then DBSCAN so logs and folders stay predictable.
+
+---
+
+## Datasets (analysis lenses)
+
+- **DOH (A–E)** — `DOH_A_distribution_recipient` … `DOH_E_unequal_supply_regions`: recipient-centric views (volume, shortage risk, overstocking, inefficient delivery patterns, regional inequality).
+- **PhilGEPS (A–G)** — `PhilGEPS_A_supplier_awardee` … `PhilGEPS_G_unequal_supply_regions`: supplier totals, line-level procurement, then awardee×region unit plus the same thematic lenses as DOH B–E.
+
+Config objects (paths + ID columns) live in `_common.py`: `get_doh_dataset_configs()` and `get_philgeps_dataset_configs()`.
+
+---
+
+## Step 8 output bundle
+
+Under each source: `webp/EDA_and_visualization/{DOH|PhilGEPS}/08_output_to_use/{kmeans|dbscan}/{slug}/`.
+
+Per folder you get PCA scatter (+ flagged overlay), top-10 bar, silhouette figure, centroid heatmap, radar chart, and `export_labeled.csv`. See the table in `OUTPUT_LAYOUT.md` for filenames.
+
+The **slug** is the config name without the `DOH_` / `PhilGEPS_` prefix (e.g. `B_high_risk_shortage`).
+
+---
+
+## Logs
+
+Every step tees stdout/stderr to `webp/logs/{DOH|PhilGEPS}/<step>_*_terminal.txt` while also printing to the console. When something fails halfway through a long run, open the last log file first.

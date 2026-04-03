@@ -1,0 +1,21 @@
+K-Means [DOH_A_distribution_recipient]: Saved silhouette vs k -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\kmeans\DOH_A_distribution_recipient_silhouette_vs_k.png
+K-Means [DOH_A_distribution_recipient]: Saved clustering results by k -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\kmeans\DOH_A_distribution_recipient_clustering_results_by_k.png
+K-Means [DOH_A_distribution_recipient]: Saved hyperparameter tuning -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\kmeans\DOH_A_distribution_recipient_hyperparam_tuning.png
+K-Means [DOH_A_distribution_recipient]: k=2, clusters=2, silhouette=0.9351 -> C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\04_clustering\clustering_DOH_A_distribution_recipient_kmeans.csv
+K-Means [DOH_B_high_risk_shortage]: Saved silhouette vs k -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\kmeans\DOH_B_high_risk_shortage_silhouette_vs_k.png
+K-Means [DOH_B_high_risk_shortage]: Saved clustering results by k -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\kmeans\DOH_B_high_risk_shortage_clustering_results_by_k.png
+K-Means [DOH_B_high_risk_shortage]: Saved hyperparameter tuning -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\kmeans\DOH_B_high_risk_shortage_hyperparam_tuning.png
+K-Means [DOH_B_high_risk_shortage]: k=2, clusters=2, silhouette=0.8219 -> C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\04_clustering\clustering_DOH_B_high_risk_shortage_kmeans.csv
+K-Means [DOH_C_overstocking]: Saved silhouette vs k -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\kmeans\DOH_C_overstocking_silhouette_vs_k.png
+K-Means [DOH_C_overstocking]: Saved clustering results by k -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\kmeans\DOH_C_overstocking_clustering_results_by_k.png
+K-Means [DOH_C_overstocking]: Saved hyperparameter tuning -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\kmeans\DOH_C_overstocking_hyperparam_tuning.png
+K-Means [DOH_C_overstocking]: k=2, clusters=2, silhouette=0.8232 -> C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\04_clustering\clustering_DOH_C_overstocking_kmeans.csv
+K-Means [DOH_D_inefficient_distribution]: Saved silhouette vs k -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\kmeans\DOH_D_inefficient_distribution_silhouette_vs_k.png
+K-Means [DOH_D_inefficient_distribution]: Saved clustering results by k -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\kmeans\DOH_D_inefficient_distribution_clustering_results_by_k.png
+K-Means [DOH_D_inefficient_distribution]: Saved hyperparameter tuning -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\kmeans\DOH_D_inefficient_distribution_hyperparam_tuning.png
+K-Means [DOH_D_inefficient_distribution]: k=2, clusters=2, silhouette=0.9176 -> C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\04_clustering\clustering_DOH_D_inefficient_distribution_kmeans.csv
+K-Means [DOH_E_unequal_supply_regions]: Saved silhouette vs k -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\kmeans\DOH_E_unequal_supply_regions_silhouette_vs_k.png
+K-Means [DOH_E_unequal_supply_regions]: Saved clustering results by k -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\kmeans\DOH_E_unequal_supply_regions_clustering_results_by_k.png
+K-Means [DOH_E_unequal_supply_regions]: Saved hyperparameter tuning -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\kmeans\DOH_E_unequal_supply_regions_hyperparam_tuning.png
+K-Means [DOH_E_unequal_supply_regions]: k=2, clusters=2, silhouette=0.9213 -> C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\04_clustering\clustering_DOH_E_unequal_supply_regions_kmeans.csv
+K-Means: Saved combined hyperparameter tuning summary -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\04_clustering_implementation\kmeans\kmeans_hyperparam_tuning_summary.png

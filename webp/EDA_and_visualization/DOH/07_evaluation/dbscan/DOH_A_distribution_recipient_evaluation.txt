@@ -1,0 +1,9 @@
+DBSCAN Evaluation - DOH_A_distribution_recipient
+==================================================
+n_samples: 464
+n_clusters: 2
+noise_count: 67
+noise_ratio: 0.1444
+silhouette_score (excl. noise): 0.7708
+calinski_harabasz_score: 240.5786
+davies_bouldin_score: 0.3300

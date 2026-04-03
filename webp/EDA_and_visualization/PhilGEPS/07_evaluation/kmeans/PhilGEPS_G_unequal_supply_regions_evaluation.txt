@@ -1,0 +1,7 @@
+K-Means Evaluation - PhilGEPS_G_unequal_supply_regions
+==================================================
+n_samples: 4013
+n_clusters: 2
+silhouette_score: 0.9541
+calinski_harabasz_score: 2072.3229
+davies_bouldin_score: 0.9467

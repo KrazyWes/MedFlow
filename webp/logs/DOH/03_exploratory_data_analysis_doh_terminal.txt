@@ -1,0 +1,4 @@
+DOH EDA: Cleaned -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\03_exploratory_data_analysis/01_cleaned
+DOH EDA: Transformed A -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\03_exploratory_data_analysis/02_transformed_A_distribution
+DOH EDA: Minmax A -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\DOH\03_exploratory_data_analysis/03_scaled_minmax_A
+DOH EDA complete.

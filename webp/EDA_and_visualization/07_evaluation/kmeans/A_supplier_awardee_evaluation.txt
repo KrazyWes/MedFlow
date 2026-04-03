@@ -1,7 +1,0 @@
-K-Means Evaluation - A_supplier_awardee
-==================================================
-n_samples: 4006
-n_clusters: 8
-silhouette_score: 0.3692
-calinski_harabasz_score: 846.6136
-davies_bouldin_score: 1.2608

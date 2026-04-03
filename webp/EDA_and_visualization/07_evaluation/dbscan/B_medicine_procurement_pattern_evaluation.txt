@@ -1,9 +1,0 @@
-DBSCAN Evaluation - B_medicine_procurement_pattern
-==================================================
-n_samples: 35878
-n_clusters: 49
-noise_count: 1952
-noise_ratio: 0.0544
-silhouette_score (excl. noise): 0.3652
-calinski_harabasz_score: 4588.3530
-davies_bouldin_score: 0.5683

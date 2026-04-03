@@ -1,0 +1,10 @@
+Evaluation K-Means [PhilGEPS_A_supplier_awardee]: sil=0.3692, CH=846.6136, DB=1.2608 -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\kmeans
+Evaluation K-Means [PhilGEPS_B_medicine_procurement_pattern]: sil=0.6488, CH=7686.8360, DB=0.8958 -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\kmeans
+Evaluation K-Means [PhilGEPS_C_distribution_recipient]: sil=0.9560, CH=2318.0251, DB=0.9077 -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\kmeans
+Evaluation K-Means [PhilGEPS_D_high_risk_shortage]: sil=0.7011, CH=10062.1427, DB=0.4848 -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\kmeans
+Evaluation K-Means [PhilGEPS_E_overstocking]: sil=0.5897, CH=5567.9204, DB=0.6076 -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\kmeans
+Evaluation K-Means [PhilGEPS_F_inefficient_distribution]: sil=0.9097, CH=74329.2219, DB=0.1315 -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\kmeans
+Evaluation K-Means [PhilGEPS_G_unequal_supply_regions]: sil=0.9541, CH=2072.3229, DB=0.9467 -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\kmeans
+Saved comparison chart -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\kmeans/comparison_silhouette.png
+Saved spider comparison -> C:\Users\loper\Desktop\MedFlow\webp\EDA_and_visualization\PhilGEPS\07_evaluation\kmeans/comparison_spider.png
+Evaluation K-Means complete.

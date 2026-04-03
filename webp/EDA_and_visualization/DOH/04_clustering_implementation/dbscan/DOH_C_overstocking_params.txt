@@ -1,0 +1,10 @@
+eps=0.04908312531614546
+min_samples=4
+n_clusters=2
+noise_count=32
+noise_ratio=0.0690
+silhouette=0.6094
+selection_method=silhouette_x_assigned_ratio
+output=C:\Users\loper\Desktop\MedFlow\this_datasets\DOH\04_clustering\clustering_DOH_C_overstocking_dbscan.csv
+
+# Parameter selection: k-distance median -> eps sensitivity (noise/assigned ratio) -> best eps

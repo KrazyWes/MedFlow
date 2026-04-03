@@ -1,4 +1,0 @@
-k=7
-inertia=2339.2529
-silhouette=0.6488
-output=C:\Users\loper\Desktop\MedFlow\this_datasets\clustering_B_medicine_procurement_pattern_kmeans.csv

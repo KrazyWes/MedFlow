@@ -1,0 +1,5 @@
+k=8
+method=sil_vs_k
+inertia=1821.7682
+silhouette=0.3692
+output=C:\Users\loper\Desktop\MedFlow\this_datasets\PhilGEPS\04_clustering\clustering_PhilGEPS_A_supplier_awardee_kmeans.csv
